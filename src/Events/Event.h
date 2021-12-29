@@ -1,6 +1,4 @@
 #pragma once
-
-#include "Log/Logger.h"
 #define BIT(x) (1 << x)
 
 namespace Callie{
