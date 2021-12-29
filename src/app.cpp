@@ -1,6 +1,8 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
-#include "Logger/Logger.h"
+#include "Log/Logger.h"
+#include "Events/Event.h"
+#include "Events/KeyEvent.h"
 
 int main(void)
 {
