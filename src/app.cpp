@@ -1,10 +1,13 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
+#include <iostream>
+
 #include "Log/Logger.h"
 #include "Events/Event.h"
 #include "Events/KeyEvent.h"
 #include "Events/MouseEvent.h"
 #include "Events/ApplicationEvent.h"
+#include "Core/Config.h"
 
 int main(void)
 {
@@ -15,7 +18,7 @@ int main(void)
         return -1;
 
     /* Create a windowed mode window and its OpenGL context */
-    window = glfwCreateWindow(640, 480, "Hello World", NULL, NULL);
+    window = glfwCreateWindow(640, 480, "Callie", NULL, NULL);
     if (!window)
     {
         glfwTerminate();
@@ -29,6 +32,9 @@ int main(void)
     GLenum err = glewInit();
     if (GLEW_OK != err)
         ERROR("Error:", glewGetErrorString(err));
+    
+    std::cout << glGetString(GL_VERSION) << std::endl;
+    std::cout << PROJECT_NAME << " | " PROJECT_VER << std::endl;
 
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(window))

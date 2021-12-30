@@ -1,2 +1,7 @@
+# dirs
 build
 .vs
+.vscode
+
+# files
+Config.h
