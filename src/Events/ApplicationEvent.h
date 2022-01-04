@@ -1,6 +1,5 @@
 #pragma once
 
-#include <string>
 #include "Events/Event.h"
 
 namespace Callie{

@@ -1,11 +1,7 @@
 #pragma once
 
-// Just for debuging... should not be included in release version
-#include <string>
-#include <sstream>
-
-#include "Events/Event.h"
-#include "Events/KeyCodes.h"
+#include <Events/Event.h>
+#include <Events/KeyCodes.h>
 
 namespace Callie{
     // Should be used as interface for KeyEvents

@@ -1,34 +1,33 @@
-#include "Logger.h"
-#include <iostream>
-#include <fstream>
 #include <iomanip>
+#include <fstream>
+
 #include <GL/glew.h>
-#include <sstream>
-#include <mutex>
+
+#include <Core/Log.h>
 
 namespace Callie{
-    LogPriority log_level = LogPriority::DEBUG;
-    std::mutex log_mutex;
+    LogPriority g_LogLevel = LogPriority::DEBUG;
+    std::mutex g_LogMutex;
 
-    void toFile(std::stringstream& log){
-        std::cout << log.str();
+    void Log(std::stringstream& message) {
+        std::cout << message.str();
+
         std::ofstream file("log.txt", std::ios::app);
         if (file.is_open()){
-            file << getTimestamp() << " " << log.str();
+            file << Timestamp() << " " << message.str();
             file.close();
-        }
-        else
+        } else
             std::cout << "Unable to open log file!\n";
     }
 
-    const std::string getTimestamp() {
+    const std::string Timestamp(){
         std::chrono::system_clock::time_point now = std::chrono::system_clock::now();
         std::time_t currentTime = std::chrono::system_clock::to_time_t(now);
         std::tm gmt; localtime_r(&currentTime, &gmt); //convert time
 
         std::stringstream ss;
         ss << std::put_time(&gmt, "%d-%m-%Y %T");
-        return ss.str();
+        return ss.str(); 
     }
 
     void GLClearError(){
@@ -38,11 +37,25 @@ namespace Callie{
     bool GLLogCall(const char* function, const char* file, int line){
         bool status = true;
         while (GLenum error = glGetError()){
-            std::stringstream log;
-            log << "[OpenGl error (" << error << ")]: " << function <<
+            std::stringstream message;
+            message << "[OpenGl error (" << error << ")]: " << function <<
                 " " << file << ":" << line << std::endl;
 
-            toFile(log);
+            Log(message);
+
+            status = false;
+        }
+        return status;
+    }
+
+    bool GLLogCallMessage(const char* function, const char* file, int line, const char* message){
+        bool status = true;
+        while (GLenum error = glGetError()){
+            std::stringstream log;
+            log << "[OpenGl error (" << error << ")]: " << function <<
+                " " << file << ":" << line << " | " << message << std::endl;
+
+            Log(log);
 
             status = false;
         }

@@ -1,16 +1,17 @@
+#include <iostream>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
-#include <iostream>
 
-#include "Log/Logger.h"
-#include "Events/Event.h"
-#include "Events/KeyEvent.h"
-#include "Events/MouseEvent.h"
-#include "Events/ApplicationEvent.h"
-#include "Core/Config.h"
+#include <Core/Config.h>
+#include <Core/Base.h>
+#include <Core/Log.h>
 
-int main(void)
-{
+#include <Events/Event.h>
+#include <Events/KeyEvent.h>
+#include <Events/MouseEvent.h>
+#include <Events/ApplicationEvent.h>
+
+int main(const int argc, const char** argv){
     GLFWwindow* window;
 
     /* Initialize the library */
@@ -18,7 +19,7 @@ int main(void)
         return -1;
 
     /* Create a windowed mode window and its OpenGL context */
-    window = glfwCreateWindow(640, 480, "Callie", NULL, NULL);
+    window = glfwCreateWindow(640, 480, "Hello World", NULL, NULL);
     if (!window)
     {
         glfwTerminate();
@@ -32,9 +33,9 @@ int main(void)
     GLenum err = glewInit();
     if (GLEW_OK != err)
         ERROR("Error:", glewGetErrorString(err));
-    
+
     std::cout << glGetString(GL_VERSION) << std::endl;
-    std::cout << PROJECT_NAME << " | " PROJECT_VER << std::endl;
+    std::cout << PROJECT_NAME << " | " PROJECT_VERSION << std::endl;
 
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(window))

@@ -1,5 +1,5 @@
 #pragma once
-#define BIT(x) (1 << x)
+#include "Core/Base.h"
 
 namespace Callie{
     enum class EventType{
@@ -19,7 +19,6 @@ namespace Callie{
         EventCategoryMouseButton = BIT(4)
     };
 
-// TODO: probably not best way to implement this :S not very readable
 #define EVENT_CLASS_TYPE(type) static EventType GetStaticType() { return EventType::type; }\
                                 virtual EventType GetEventType() const override { return GetStaticType(); }\
                                 virtual const char* GetName() const override { return #type; }
