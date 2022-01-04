@@ -23,4 +23,5 @@ find_package(GLEW   REQUIRED)
 find_package(glfw3  REQUIRED)
 
 target_link_libraries(${PROJECT_NAME} PRIVATE GL GLEW glfw)
+target_precompile_headers(${PROJECT_NAME} PRIVATE src/clpch.h)
 target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)

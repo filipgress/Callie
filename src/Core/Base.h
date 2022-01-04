@@ -1,8 +1,5 @@
 #pragma once
 
-#include <iostream>
-#include <sstream>
-
 #include <Core/PlatformDetection.h>
 
 #define CL_DEBUG

@@ -1,5 +1,4 @@
 #pragma once
-#include "Core/Base.h"
 
 namespace Callie{
     enum class EventType{

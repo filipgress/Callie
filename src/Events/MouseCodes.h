@@ -1,5 +1,4 @@
 #pragma once
-#include <stdint.h>
 
 namespace Callie{
     using MouseCode = uint16_t;

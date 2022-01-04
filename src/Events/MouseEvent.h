@@ -1,7 +1,7 @@
 #pragma once
-#include <sstream>
-#include "Events/Event.h"
-#include "Events/MouseCodes.h"
+
+#include <Events/Event.h>
+#include <Events/MouseCodes.h>
 
 namespace Callie{
     class MouseMovedEvent : public Event{

@@ -1,8 +1,6 @@
-#include <iomanip>
-#include <fstream>
+#include <clpch.h>
 
 #include <GL/glew.h>
-
 #include <Core/Log.h>
 
 namespace Callie{
