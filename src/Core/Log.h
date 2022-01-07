@@ -11,13 +11,13 @@ namespace Callie{
     const std::string Timestamp();
 
     // OpenGL error handling
-#define GLCall(x) Callie::GLClearError();\
-        x;\
-        CL_DEBUGBREAK(Callie::GLLogCall(#x, __FILE__, __LINE__))
+#define GLCall(function) Callie::GLClearError();\
+        function;\
+        CL_ASSERT(Callie::GLLogCall(#function, __FILE__, __LINE__))
 
-#define GLCallMessage(x, y) Callie::GLClearError();\
-        x;\
-        CL_DEBUGBREAK(Callie::GLLogCall(#x, __FILE__, __LINE__, y))
+#define GLCallMessage(function, message) Callie::GLClearError();\
+        function;\
+        CL_ASSERT(Callie::GLLogCall(#function, __FILE__, __LINE__, message))
 
     void GLClearError();
     bool GLLogCall(const char* function, const char* file, int line);
