@@ -3,7 +3,7 @@
 #include <GL/glew.h>
 #include <Core/Log.h>
 
-namespace Callie{
+namespace cl{
     LogPriority g_LogLevel = LogPriority::DEBUG;
     std::mutex g_LogMutex;
 

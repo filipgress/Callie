@@ -1,6 +1,6 @@
 #pragma once
 
-namespace Callie{
+namespace cl{
     using MouseCode = uint16_t;
 
     namespace Mouse{

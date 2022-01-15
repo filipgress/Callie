@@ -9,6 +9,8 @@
 #include <mutex>
 #include <stdint.h>
 #include <math.h>
+#include <vector>
 
+#include <Core/Config.h>
 #include <Core/Base.h>
 #include <Core/Log.h>

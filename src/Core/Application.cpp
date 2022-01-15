@@ -1,6 +1,5 @@
 #include <clpch.h>
 
-#include <iostream>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
@@ -8,15 +7,9 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#include <Core/Config.h>
-#include <Core/Base.h>
-#include <Core/Log.h>
-
-#include <Events/Event.h>
-#include <Events/KeyEvent.h>
-#include <Events/MouseEvent.h>
-#include <Events/ApplicationEvent.h>
-
+#include <Graphics/VertexArray.h>
+#include <Graphics/IndexBuffer.h>
+#include <Graphics/VertexBuffer.h>
 
 // Window dimensions
 const float toRadians = M_PI / 180.0f;
@@ -50,39 +43,30 @@ void main(){\n\
     color = vCol;\n\
 }";
 
-void CreateTriangle(){
-    unsigned int indeces[]{
-        0, 3, 1,
-        1, 3, 2,
-        2, 3, 0,
-        0, 1, 2
-    };
+// void CreateTriangle(){
+//     unsigned int indeces[]{
+//         0, 3, 1,
+//         1, 3, 2,
+//         2, 3, 0,
+//         0, 1, 2
+//     };
 
-    GLfloat verteces[]{
-        -1.0f, -1.0f, 0.0f,
-         0.0f, -1.0f, 1.0f,
-         1.0f, -1.0f, 0.0f,
-         0.0f,  1.0f, 0.0f
-    };
+//     GLfloat verteces[]{
+//         -1.0f, -1.0f, 0.0f,
+//          0.0f, -1.0f, 1.0f,
+//          1.0f, -1.0f, 0.0f,
+//          0.0f,  1.0f, 0.0f
+//     };
 
-    glGenVertexArrays(1, &VAO);
-    glBindVertexArray(VAO);
+//     glGenVertexArrays(1, &VAO);
+//     glBindVertexArray(VAO);
 
-    glGenBuffers(1, &IBO);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indeces), indeces, GL_STATIC_DRAW);
+//     cl::IndexBuffer ib(indeces, 4);
+//     cl::VertexBuffer vb(verteces, sizeof(verteces));
 
-    glGenBuffers(1, &VBO);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-
-    glBufferData(GL_ARRAY_BUFFER, sizeof(verteces), verteces, GL_STATIC_DRAW);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3*sizeof(GLfloat), 0);
-    glEnableVertexAttribArray(0);
-
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindVertexArray(0);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-}
+//     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3*sizeof(GLfloat), 0);
+//     glEnableVertexAttribArray(0);
+// }
 
 void AddShader(GLint program, const char* shaderCode, GLenum shaderType){
     GLuint shader = glCreateShader(shaderType);
@@ -101,6 +85,7 @@ void AddShader(GLint program, const char* shaderCode, GLenum shaderType){
             std::cout << "FRAGMENT BUFFER\n";
 
         ERROR("Error compiling shader: ", shaderType, eLog);
+        return;
     }
 
     glAttachShader(program, shader);
@@ -122,6 +107,7 @@ void CompileShaders(){
     if (!result){
         glGetProgramInfoLog(shader, sizeof(eLog), NULL, eLog);
         ERROR("Unable to link properly!", eLog);
+        return;
     }
 
     glValidateProgram(shader);
@@ -129,6 +115,7 @@ void CompileShaders(){
     if (!result){
         glGetProgramInfoLog(shader, sizeof(eLog), NULL, eLog);
         ERROR("Unable to validate program!", eLog);
+        return;
     }
 
     uniformModel        = glGetUniformLocation(shader, "model");
@@ -150,7 +137,7 @@ int main(const int argc, const char** argv){
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 
     /* Create a windowed mode window and its OpenGL context */
-    window = glfwCreateWindow(WIDTH, HEIGHT, "Callie", NULL, NULL);
+    window = glfwCreateWindow(WIDTH, HEIGHT, PROJECT_NAME, NULL, NULL);
     if (!window)
     {
         glfwTerminate();
@@ -169,7 +156,7 @@ int main(const int argc, const char** argv){
     if (GLEW_OK != err){
         ERROR("Error:", glewGetErrorString(err));
         glfwTerminate();
-        return 1;
+        // return 1;
     }
 
     /* Setup Viewport size */
@@ -179,8 +166,32 @@ int main(const int argc, const char** argv){
     std::cout << PROJECT_NAME << " | " PROJECT_VERSION << "v\n";
 
 
+    // *********************************** //
+    unsigned int indeces[]{
+        0, 3, 1,
+        1, 3, 2,
+        2, 3, 0,
+        0, 1, 2
+    };
 
-    CreateTriangle();
+    GLfloat verteces[]{
+        -1.0f, -1.0f, 0.0f,
+         0.0f, -1.0f, 1.0f,
+         1.0f, -1.0f, 0.0f,
+         0.0f,  1.0f, 0.0f
+    };
+
+    // glGenVertexArrays(1, &VAO);
+    // glBindVertexArray(VAO);
+
+    cl::VertexArray va;
+    cl::IndexBuffer ib(indeces, 12);
+    cl::VertexBuffer vb(verteces, sizeof(verteces));
+
+    cl::VertexBufferLayout layout;
+    layout.Push<float>(3);
+    va.AddBuffer(vb, layout);
+
     CompileShaders();
 
     glEnable(GL_DEPTH_TEST);
@@ -218,17 +229,17 @@ int main(const int argc, const char** argv){
         glUseProgram(shader);
             glm::mat4 model(1.0f);
             model = glm::translate(model, glm::vec3(triOffset, 0.0f, -2.0f));
-            // model = glm::rotate(model, currAngle * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+            model = glm::rotate(model, currAngle * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
             model = glm::scale(model, glm::vec3(0.4f, 0.4f, 1.0f));
 
             glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
             glUniformMatrix4fv(uniformProjection, 1, GL_FALSE, glm::value_ptr(projection));
 
-            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO);
-            glBindVertexArray(VAO);
-                glDrawElements(GL_TRIANGLES, 12, GL_UNSIGNED_INT, 0);
-            glBindVertexArray(0);
-            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+            va.Bind();
+            ib.Bind();
+                glDrawElements(GL_TRIANGLES, ib.GetCount(), GL_UNSIGNED_INT, 0);
+            va.Unbind();
+            ib.Unbind();      
         glUseProgram(0);
 
         /* Swap front and back buffers */

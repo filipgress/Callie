@@ -1,6 +1,6 @@
 #pragma once
 
-namespace Callie{
+namespace cl{
     using KeyCode = uint16_t;
 
     namespace Key{

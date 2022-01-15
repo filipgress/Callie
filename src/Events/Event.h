@@ -1,6 +1,6 @@
 #pragma once
 
-namespace Callie{
+namespace cl{
     enum class EventType{
         None = 0,
         WindowClose, WindowResize, WindowFocus, WindowMoved,

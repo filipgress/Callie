@@ -3,7 +3,7 @@
 #include <Events/Event.h>
 #include <Events/KeyCodes.h>
 
-namespace Callie{
+namespace cl{
     // Should be used as interface for KeyEvents
     class KeyEvent : public Event{ 
         public:

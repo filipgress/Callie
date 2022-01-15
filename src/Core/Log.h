@@ -2,7 +2,7 @@
 
 #include <Core/Base.h>
 
-namespace Callie{
+namespace cl{
     enum class LogPriority { TRACE, DEBUG, INFO, WARN, ERROR, FATAL };
     extern LogPriority g_LogLevel;
     extern std::mutex g_LogMutex;
@@ -11,23 +11,23 @@ namespace Callie{
     const std::string Timestamp();
 
     // OpenGL error handling
-#define GLCall(function) Callie::GLClearError();\
+#define GLCall(function) cl::GLClearError();\
         function;\
-        CL_ASSERT(Callie::GLLogCall(#function, __FILE__, __LINE__))
+        CL_ASSERT(cl::GLLogCall(#function, __FILE__, __LINE__))
 
-#define GLCallMessage(function, message) Callie::GLClearError();\
+#define GLCallMessage(function, message) cl::GLClearError();\
         function;\
-        CL_ASSERT(Callie::GLLogCall(#function, __FILE__, __LINE__, message))
+        CL_ASSERT(cl::GLLogCall(#function, __FILE__, __LINE__, message))
 
     void GLClearError();
     bool GLLogCall(const char* function, const char* file, int line);
 
-#define TRACE(...) Callie::LogCall(Callie::LogPriority::TRACE, "TRACE", __FILE__, __LINE__, __VA_ARGS__);
-#define DEBUG(...) Callie::LogCall(Callie::LogPriority::DEBUG, "DEBUG", __FILE__, __LINE__, __VA_ARGS__);
-#define INFO(...)  Callie::LogCall(Callie::LogPriority::INFO,  "INFO" , __FILE__, __LINE__, __VA_ARGS__);
-#define WARN(...)  Callie::LogCall(Callie::LogPriority::WARN,  "WARN" , __FILE__, __LINE__, __VA_ARGS__);
-#define ERROR(...) Callie::LogCall(Callie::LogPriority::ERROR, "ERROR", __FILE__, __LINE__, __VA_ARGS__);
-#define FATAL(...) Callie::LogCall(Callie::LogPriority::FATAL, "FATAL", __FILE__, __LINE__, __VA_ARGS__);
+#define TRACE(...) cl::LogCall(cl::LogPriority::TRACE, "TRACE", __FILE__, __LINE__, __VA_ARGS__);
+#define DEBUG(...) cl::LogCall(cl::LogPriority::DEBUG, "DEBUG", __FILE__, __LINE__, __VA_ARGS__);
+#define INFO(...)  cl::LogCall(cl::LogPriority::INFO,  "INFO" , __FILE__, __LINE__, __VA_ARGS__);
+#define WARN(...)  cl::LogCall(cl::LogPriority::WARN,  "WARN" , __FILE__, __LINE__, __VA_ARGS__);
+#define ERROR(...) cl::LogCall(cl::LogPriority::ERROR, "ERROR", __FILE__, __LINE__, __VA_ARGS__);
+#define FATAL(...) cl::LogCall(cl::LogPriority::FATAL, "FATAL", __FILE__, __LINE__, __VA_ARGS__);
 
     template <typename T>
     void recursive(std::stringstream& message, T argument) {

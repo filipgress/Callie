@@ -3,7 +3,7 @@
 #include <Events/Event.h>
 #include <Events/MouseCodes.h>
 
-namespace Callie{
+namespace cl{
     class MouseMovedEvent : public Event{
         public:
             MouseMovedEvent(const float x, const float y)

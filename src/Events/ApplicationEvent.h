@@ -2,7 +2,7 @@
 
 #include <Events/Event.h>
 
-namespace Callie{
+namespace cl{
     class WindowResizeEvent : public Event{
         public:
             WindowResizeEvent(unsigned int width, unsigned int height)
