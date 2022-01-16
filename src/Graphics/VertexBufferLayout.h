@@ -26,6 +26,8 @@ namespace cl{
             unsigned int m_Stride;
 
         public:
+            VertexBufferLayout() : m_Stride(0) {}
+
             template <typename T>
             inline void Push(unsigned int count){ CL_DEBUGBREAK(); }
 

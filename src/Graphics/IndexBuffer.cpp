@@ -1,5 +1,4 @@
 #include <clpch.h>
-#include <GL/glew.h>
 
 #include <Graphics/IndexBuffer.h>
 

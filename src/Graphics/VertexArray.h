@@ -1,5 +1,7 @@
 #pragma once
 
+#include <GL/glew.h>
+
 #include <Graphics/VertexBuffer.h>
 #include <Graphics/VertexBufferLayout.h>
 

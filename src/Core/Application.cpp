@@ -10,117 +10,12 @@
 #include <Graphics/VertexArray.h>
 #include <Graphics/IndexBuffer.h>
 #include <Graphics/VertexBuffer.h>
+#include <Graphics/Shader.h>
 
 // Window dimensions
 const float toRadians = M_PI / 180.0f;
 const GLint WIDTH = 800, HEIGHT = 600;
 GLint uniformModel, uniformProjection;
-GLuint VAO, IBO, VBO, shader;
-
-// Vertex Shader
-static const char* vShader = "\
-#version 330\n\
-\n\
-layout (location = 0) in vec3 pos;\n\
-out vec4 vCol;\n\
-\n\
-uniform mat4 projection;\n\
-uniform mat4 model;\n\
-\n\
-void main(){\n\
-    gl_Position = projection * model * vec4(pos, 1.0f);\n\
-    vCol = vec4(clamp(pos, 0.0f, 1.0f), 1.0f);\n\
-}";
-
-// Fragment Shader
-static const char* fShader = "\
-#version 330\n\
-\n\
-in vec4 vCol;\n\
-out vec4 color;\n\
-\n\
-void main(){\n\
-    color = vCol;\n\
-}";
-
-// void CreateTriangle(){
-//     unsigned int indeces[]{
-//         0, 3, 1,
-//         1, 3, 2,
-//         2, 3, 0,
-//         0, 1, 2
-//     };
-
-//     GLfloat verteces[]{
-//         -1.0f, -1.0f, 0.0f,
-//          0.0f, -1.0f, 1.0f,
-//          1.0f, -1.0f, 0.0f,
-//          0.0f,  1.0f, 0.0f
-//     };
-
-//     glGenVertexArrays(1, &VAO);
-//     glBindVertexArray(VAO);
-
-//     cl::IndexBuffer ib(indeces, 4);
-//     cl::VertexBuffer vb(verteces, sizeof(verteces));
-
-//     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3*sizeof(GLfloat), 0);
-//     glEnableVertexAttribArray(0);
-// }
-
-void AddShader(GLint program, const char* shaderCode, GLenum shaderType){
-    GLuint shader = glCreateShader(shaderType);
-    glShaderSource(shader, 1, &shaderCode, NULL);
-    glCompileShader(shader);
-
-    GLint result;
-    GLchar eLog[1024] = { 0 };
-
-    glGetShaderiv(shader, GL_COMPILE_STATUS, &result);
-    if (!result){
-        glGetShaderInfoLog(shader, sizeof(eLog), NULL, eLog);
-        if (shaderType == GL_VERTEX_SHADER)
-            std::cout << "VERTEX BUFFER\n";
-        else
-            std::cout << "FRAGMENT BUFFER\n";
-
-        ERROR("Error compiling shader: ", shaderType, eLog);
-        return;
-    }
-
-    glAttachShader(program, shader);
-}
-
-void CompileShaders(){
-    shader = glCreateProgram();
-    if (!shader)
-        ERROR("Unable to create shader program!")
-
-    AddShader(shader, vShader, GL_VERTEX_SHADER);
-    AddShader(shader, fShader, GL_FRAGMENT_SHADER);
-
-    GLint result;
-    GLchar eLog[1024] = { 0 };
-
-    glLinkProgram(shader);
-    glGetProgramiv(shader, GL_LINK_STATUS, &result);
-    if (!result){
-        glGetProgramInfoLog(shader, sizeof(eLog), NULL, eLog);
-        ERROR("Unable to link properly!", eLog);
-        return;
-    }
-
-    glValidateProgram(shader);
-    glGetProgramiv(shader, GL_VALIDATE_STATUS, &result);
-    if (!result){
-        glGetProgramInfoLog(shader, sizeof(eLog), NULL, eLog);
-        ERROR("Unable to validate program!", eLog);
-        return;
-    }
-
-    uniformModel        = glGetUniformLocation(shader, "model");
-    uniformProjection   = glGetUniformLocation(shader, "projection");
-}
 
 int main(const int argc, const char** argv){
     GLFWwindow* window;
@@ -181,9 +76,6 @@ int main(const int argc, const char** argv){
          0.0f,  1.0f, 0.0f
     };
 
-    // glGenVertexArrays(1, &VAO);
-    // glBindVertexArray(VAO);
-
     cl::VertexArray va;
     cl::IndexBuffer ib(indeces, 12);
     cl::VertexBuffer vb(verteces, sizeof(verteces));
@@ -192,7 +84,10 @@ int main(const int argc, const char** argv){
     layout.Push<float>(3);
     va.AddBuffer(vb, layout);
 
-    CompileShaders();
+    cl::Shader shader("../res/shaders/VertexShader.shader", "../res/shaders/FragmentShader.shader");
+
+    uniformModel        = glGetUniformLocation(shader.GetShader(), "model");
+    uniformProjection   = glGetUniformLocation(shader.GetShader(), "projection");
 
     glEnable(GL_DEPTH_TEST);
     glm::mat4 projection = glm::perspective(45.0f, (GLfloat)bufferWidth/bufferHeight, 0.1f, 5.0f);
@@ -226,9 +121,9 @@ int main(const int argc, const char** argv){
         triScale  += scaleIncrement;
         
 
-        glUseProgram(shader);
+        shader.Bind();
             glm::mat4 model(1.0f);
-            model = glm::translate(model, glm::vec3(triOffset, 0.0f, -2.0f));
+            model = glm::translate(model, glm::vec3(triOffset, triOffset, -2.0f));
             model = glm::rotate(model, currAngle * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
             model = glm::scale(model, glm::vec3(0.4f, 0.4f, 1.0f));
 
@@ -238,9 +133,9 @@ int main(const int argc, const char** argv){
             va.Bind();
             ib.Bind();
                 glDrawElements(GL_TRIANGLES, ib.GetCount(), GL_UNSIGNED_INT, 0);
-            va.Unbind();
-            ib.Unbind();      
-        glUseProgram(0);
+        //     va.Unbind();
+        //     ib.Unbind();      
+        // shader.Unbind();
 
         /* Swap front and back buffers */
         glfwSwapBuffers(window);
