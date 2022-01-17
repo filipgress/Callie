@@ -14,7 +14,10 @@ namespace cl{
 
         public:
             Mesh(const void* data, unsigned int* indeces, unsigned int sizeOfData, unsigned int numOfIndeces);
-            void CreateMesh() const;
-            void ClearMesh() const;
+
+            void Bind();
+            void Unbind();
+
+            void Draw();
     };
 }

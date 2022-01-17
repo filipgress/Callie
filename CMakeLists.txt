@@ -12,7 +12,6 @@ add_executable(${PROJECT_NAME}
     src/Core/Log.cpp
     src/Core/Mesh.cpp
     
-    src/Graphics/Renderer.cpp
     src/Graphics/VertexArray.cpp
     src/Graphics/IndexBuffer.cpp
     src/Graphics/VertexBuffer.cpp

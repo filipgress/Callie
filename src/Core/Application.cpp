@@ -7,6 +7,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+#include <Core/Mesh.h>
 #include <Graphics/VertexArray.h>
 #include <Graphics/IndexBuffer.h>
 #include <Graphics/VertexBuffer.h>
@@ -64,30 +65,22 @@ int main(const int argc, const char** argv){
 
     // *********************************** //
     unsigned int indeces[]{
-        0, 3, 1,
-        1, 3, 2,
-        2, 3, 0,
-        0, 1, 2
+        0, 1, 2,
+        3, 0, 2
     };
 
     GLfloat verteces[]{
         -1.0f, -1.0f, 0.0f,
-         0.0f, -1.0f, 1.0f,
-         1.0f, -1.0f, 0.0f,
-         0.0f,  1.0f, 0.0f
+        -1.0f,  1.0f, 0.0f,
+         1.0f,  1.0f, 0.0f,
+         1.0f, -1.0f, 0.0f
     };
 
-    cl::VertexArray va;
-    cl::IndexBuffer ib(indeces, 12);
-    cl::VertexBuffer vb(verteces, sizeof(verteces));
-
-    cl::VertexBufferLayout layout;
-    layout.Push<float>(3);
-    va.AddBuffer(vb, layout);
-
+    cl::Mesh obj(verteces, indeces, sizeof(verteces), 6);
+    cl::Mesh obj2(verteces, indeces, sizeof(verteces), 6);
     cl::Shader shader("../res/shaders/VertexShader.shader", "../res/shaders/FragmentShader.shader");
 
-    glm::mat4 projection = glm::perspective(45.0f, (GLfloat)bufferWidth/bufferHeight, 0.1f, 5.0f);
+    glm::mat4 projection = glm::perspective(45.0f, (GLfloat)bufferWidth/bufferHeight, 0.1f, 100.0f);
 
     float triOffset = 0.0f, triIncrement = 0.005f;
     int currAngle = 0, angleIncrement = 1;
@@ -120,16 +113,26 @@ int main(const int argc, const char** argv){
 
         shader.Bind();
             glm::mat4 model(1.0f);
-            model = glm::translate(model, glm::vec3(triOffset, triOffset, -2.0f));
+
+            model = glm::translate(model, glm::vec3(-1.0f, 0.0f, -5.0f));
             model = glm::rotate(model, currAngle * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
-            model = glm::scale(model, glm::vec3(0.4f, 0.4f, 1.0f));
+            model = glm::scale(model, glm::vec3(triScale, triScale, triScale));
 
-            shader.SetMat4("model", model);
             shader.SetMat4("projection", projection);
+            shader.SetMat4("model", model);
 
-            va.Bind();
-            ib.Bind();
-                glDrawElements(GL_TRIANGLES, ib.GetCount(), GL_UNSIGNED_INT, 0);
+            obj.Draw();
+
+            model = glm::mat4(1.0f);
+
+            model = glm::translate(model, glm::vec3(1.0f, 0.0f, -5.0f));
+            model = glm::rotate(model, -currAngle * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+            model = glm::scale(model, glm::vec3(triScale, triScale, triScale));
+
+            shader.SetMat4("projection", projection);
+            shader.SetMat4("model", model);
+
+            obj2.Draw();
 
         /* Swap front and back buffers */
         glfwSwapBuffers(window);
