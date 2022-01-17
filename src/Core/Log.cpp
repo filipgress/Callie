@@ -7,15 +7,17 @@ namespace cl{
     LogPriority g_LogLevel = LogPriority::DEBUG;
     std::mutex g_LogMutex;
 
-    void Log(std::stringstream& message) {
+    void Log(std::stringstream& message, LogPriority priority) {
         std::cout << message.str();
 
-        std::ofstream file("log.txt", std::ios::app);
-        if (file.is_open()){
-            file << Timestamp() << " " << message.str();
-            file.close();
-        } else
-            std::cout << "Unable to open log file!\n";
+        if (priority > LogPriority::INFO){
+            std::ofstream file("log.txt", std::ios::app);
+            if (file.is_open()){
+                file << Timestamp() << " " << message.str();
+                file.close();
+            } else
+                std::cout << "Unable to open log file!\n";
+        }
     }
 
     const std::string Timestamp(){
@@ -39,7 +41,7 @@ namespace cl{
             message << "[OpenGl error (" << error << ")]: " << function <<
                 " " << file << ":" << line << std::endl;
 
-            Log(message);
+            Log(message, LogPriority::ERROR);
 
             status = false;
         }
@@ -53,7 +55,7 @@ namespace cl{
             log << "[OpenGl error (" << error << ")]: " << function <<
                 " " << file << ":" << line << " | " << message << std::endl;
 
-            Log(log);
+            Log(log, LogPriority::ERROR);
 
             status = false;
         }

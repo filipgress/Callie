@@ -15,7 +15,6 @@
 // Window dimensions
 const float toRadians = M_PI / 180.0f;
 const GLint WIDTH = 800, HEIGHT = 600;
-GLint uniformModel, uniformProjection;
 
 int main(const int argc, const char** argv){
     GLFWwindow* window;
@@ -33,8 +32,7 @@ int main(const int argc, const char** argv){
 
     /* Create a windowed mode window and its OpenGL context */
     window = glfwCreateWindow(WIDTH, HEIGHT, PROJECT_NAME, NULL, NULL);
-    if (!window)
-    {
+    if (!window){
         glfwTerminate();
         return -1;
     }
@@ -50,9 +48,12 @@ int main(const int argc, const char** argv){
     GLenum err = glewInit();
     if (GLEW_OK != err){
         ERROR("Error:", glewGetErrorString(err));
+
         glfwTerminate();
-        // return 1;
+        return -1;
     }
+
+    glEnable(GL_DEPTH_TEST);
 
     /* Setup Viewport size */
     glViewport(0, 0, bufferWidth, bufferHeight);
@@ -86,10 +87,6 @@ int main(const int argc, const char** argv){
 
     cl::Shader shader("../res/shaders/VertexShader.shader", "../res/shaders/FragmentShader.shader");
 
-    uniformModel        = glGetUniformLocation(shader.GetShader(), "model");
-    uniformProjection   = glGetUniformLocation(shader.GetShader(), "projection");
-
-    glEnable(GL_DEPTH_TEST);
     glm::mat4 projection = glm::perspective(45.0f, (GLfloat)bufferWidth/bufferHeight, 0.1f, 5.0f);
 
     float triOffset = 0.0f, triIncrement = 0.005f;
@@ -127,15 +124,12 @@ int main(const int argc, const char** argv){
             model = glm::rotate(model, currAngle * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
             model = glm::scale(model, glm::vec3(0.4f, 0.4f, 1.0f));
 
-            glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
-            glUniformMatrix4fv(uniformProjection, 1, GL_FALSE, glm::value_ptr(projection));
+            shader.SetMat4("model", model);
+            shader.SetMat4("projection", projection);
 
             va.Bind();
             ib.Bind();
                 glDrawElements(GL_TRIANGLES, ib.GetCount(), GL_UNSIGNED_INT, 0);
-        //     va.Unbind();
-        //     ib.Unbind();      
-        // shader.Unbind();
 
         /* Swap front and back buffers */
         glfwSwapBuffers(window);

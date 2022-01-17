@@ -7,17 +7,22 @@ namespace cl{
     extern LogPriority g_LogLevel;
     extern std::mutex g_LogMutex;
 
-    void Log(std::stringstream& mesasge);
+    void Log(std::stringstream& mesasge, LogPriority priority);
     const std::string Timestamp();
 
-    // OpenGL error handling
-#define GLCall(function) cl::GLClearError();\
-        function;\
-        CL_ASSERT(cl::GLLogCall(#function, __FILE__, __LINE__))
-
-#define GLCallMessage(function, message) cl::GLClearError();\
-        function;\
-        CL_ASSERT(cl::GLLogCall(#function, __FILE__, __LINE__, message))
+// OpenGL error handling
+// Probably should update to latest glDebugMessageCallback() 
+#ifdef CL_DEBUG
+    #define GLCall(function) cl::GLClearError();\
+            function;\
+            CL_ASSERT(cl::GLLogCall(#function, __FILE__, __LINE__))
+    #define GLCallMessage(function, message) cl::GLClearError();\
+            function;\
+            CL_ASSERT(cl::GLLogCall(#function, __FILE__, __LINE__, message))
+#else
+    #define GLCall(function) function;
+    #define GLCallMessage(function, message) function;
+#endif
 
     void GLClearError();
     bool GLLogCall(const char* function, const char* file, int line);
@@ -49,7 +54,7 @@ namespace cl{
             message << "[" << priority_message << "] " <<
                         file << ":" << line << " | ";
             recursive(message, args...);
-            Log(message);
+            Log(message, priority);
         }
     }
 }

@@ -63,8 +63,10 @@ namespace cl{
     }
 
     Shader::~Shader(){
-        if (m_ShaderID)
+        if (m_ShaderID){
             GLCall(glDeleteProgram(m_ShaderID));
+            m_ShaderID = 0;
+        }
     }
 
     GLuint Shader::CompileShader(GLenum type, const std::string& shaderSource){
@@ -108,7 +110,6 @@ namespace cl{
         while(getline(stream, line))
             shaderSource += line + "\n";
         
-        std::cout << shaderSource;
         stream.close();
         return shaderSource;
     }
@@ -119,5 +120,51 @@ namespace cl{
 
     void Shader::Unbind() const{
         GLCall(glUseProgram(0));
+    }
+
+    GLint Shader::GetUniformLocation(const std::string& name){
+        if (m_UniformLocationCache.find(name) != m_UniformLocationCache.end())
+            return m_UniformLocationCache[name];
+
+        GLCall(GLint location = glGetUniformLocation(m_ShaderID, name.c_str()));
+        m_UniformLocationCache[name] = location;
+        return location;
+    }
+
+    void Shader::SetInt(const std::string& name, int value){
+        GLint location = GetUniformLocation(name);
+
+        if (location != -1)
+            GLCall(glUniform1i(location, value));
+    }
+    void Shader::SetFloat(const std::string& name, float value){
+        GLint location = GetUniformLocation(name);
+
+        if (location != -1)
+            GLCall(glUniform1f(location, value));
+    }
+    void Shader::SetFloat2(const std::string& name, const glm::vec2& value){
+        GLint location = GetUniformLocation(name);
+
+        if (location != -1)
+            GLCall(glUniform2f(location, value.x, value.y));
+    }
+    void Shader::SetFloat3(const std::string& name, const glm::vec3& value){
+        GLint location = GetUniformLocation(name);
+
+        if (location != -1)
+            GLCall(glUniform3f(location, value.x, value.y, value.z));
+    }
+    void Shader::SetFloat4(const std::string& name, const glm::vec4& value){
+        GLint location = GetUniformLocation(name);
+
+        if (location != -1)
+            GLCall(glUniform4f(location, value.x, value.y, value.z, value.w));
+    }
+    void Shader::SetMat4(const std::string& name, const glm::mat4& value){
+        GLint location = GetUniformLocation(name);
+
+        if (location != -1)
+            glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(value));
     }
 }
