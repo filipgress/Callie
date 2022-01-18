@@ -10,6 +10,7 @@
 #include <stdint.h>
 #include <math.h>
 #include <vector>
+#include <functional>
 
 #include <Core/Config.h>
 #include <Core/Base.h>

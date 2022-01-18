@@ -13,9 +13,11 @@
 		#error "Platform doesn't support debugbreak yet!"
 	#endif
 	#define CL_ASSERT(check) if(!(check)) CL_DEBUGBREAK()
+	#define CL_CORE_ASSERT(check, message) if(!(check)) { ERROR("Assertion failed: ", message); CL_DEBUGBREAK; }
 #else
 	#define CL_DEBUGBREAK()
 	#define CL_ASSERT(check)
+	#define CL_CORE_ASSERT(check, message)
 #endif
 
 #define BIT(x) (1 << x)

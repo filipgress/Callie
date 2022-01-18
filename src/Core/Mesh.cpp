@@ -3,7 +3,7 @@
 #include <Core/Mesh.h>
 
 namespace cl{
-    Mesh::Mesh(const void* data, unsigned int* indeces, unsigned int sizeOfData, unsigned int numOfIndeces)
+    Mesh::Mesh(Vertex* data, unsigned int* indeces, unsigned int sizeOfData, unsigned int numOfIndeces)
         : m_IBO(indeces, numOfIndeces), m_VBO(data, sizeOfData) {
         m_Layout.Push<float>(3);
         m_VAO.AddBuffer(m_VBO, m_Layout);

@@ -9,8 +9,10 @@ project(Callie
 
 add_executable(${PROJECT_NAME}
     src/Core/Application.cpp
+    src/Core/Window.cpp
     src/Core/Log.cpp
     src/Core/Mesh.cpp
+    src/Core/Model.cpp
     
     src/Graphics/VertexArray.cpp
     src/Graphics/IndexBuffer.cpp
