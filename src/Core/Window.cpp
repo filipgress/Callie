@@ -59,10 +59,6 @@ namespace cl{
 
         ++s_GLFWWindowCount;
 
-        // As for now it doesn't seem to be necessary
-        /* Get buffer size */
-        // glfwGetFramebufferSize(m_Window, &m_Data.BufferWidth, &m_Data.BufferHeight);
-
         /* Make the window's context current */
         glfwMakeContextCurrent(m_Window);
 		glfwSetWindowUserPointer(m_Window, &m_Data);

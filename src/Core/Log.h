@@ -51,8 +51,10 @@ namespace cl{
             std::scoped_lock lock(g_LogMutex);
             std::stringstream message;
 
-            message << "[" << priority_message << "] " <<
-                        file << ":" << line << " | ";
+            message << "[" << priority_message << "] ";
+            if (priority > LogPriority::INFO)
+                message << file << ":" << line << " | ";
+        
             recursive(message, args...);
             Log(message, priority);
         }

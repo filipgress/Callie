@@ -8,11 +8,12 @@ project(Callie
 )
 
 add_executable(${PROJECT_NAME}
-    src/Core/Application.cpp
+    src/Core/EntryPoint.cpp
     src/Core/Window.cpp
+    src/Core/Camera.cpp
     src/Core/Log.cpp
     src/Core/Mesh.cpp
-    src/Core/Model.cpp
+    src/Core/Line.cpp
     
     src/Graphics/VertexArray.cpp
     src/Graphics/IndexBuffer.cpp

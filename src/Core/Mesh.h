@@ -20,9 +20,12 @@ namespace cl{
             IndexBuffer m_IBO;
             VertexBuffer m_VBO;
             VertexBufferLayout m_Layout;
+            GLenum m_Mode;
 
         public:
             Mesh(Vertex* data, unsigned int* indeces, unsigned int sizeOfData, unsigned int numOfIndeces);
+
+            void SetMode(GLenum mode) { m_Mode = mode; }
 
             void Bind();
             void Unbind();

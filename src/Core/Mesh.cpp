@@ -4,7 +4,7 @@
 
 namespace cl{
     Mesh::Mesh(Vertex* data, unsigned int* indeces, unsigned int sizeOfData, unsigned int numOfIndeces)
-        : m_IBO(indeces, numOfIndeces), m_VBO(data, sizeOfData) {
+        : m_IBO(indeces, numOfIndeces), m_VBO(data, sizeOfData), m_Mode(GL_TRIANGLES) {
         m_Layout.Push<float>(3);
         m_VAO.AddBuffer(m_VBO, m_Layout);
     }
@@ -21,6 +21,6 @@ namespace cl{
 
     void Mesh::Draw(){
         Bind();
-        GLCall(glDrawElements(GL_TRIANGLES, m_IBO.GetCount(), GL_UNSIGNED_INT, 0));
+        GLCall(glDrawElements(m_Mode, m_IBO.GetCount(), GL_UNSIGNED_INT, 0));
     }
 }

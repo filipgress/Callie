@@ -85,8 +85,13 @@ namespace cl{
             std::vector<GLchar> infoLog(length);
             GLCall(glGetShaderInfoLog(id, length, &length, &infoLog[0]));
 
-            ERROR("Shader", type, "unable to compile:", &infoLog[0]);
-            CL_DEBUGBREAK();
+            if (type == GL_VERTEX_SHADER){
+                ERROR("Vertex shader unable to compile:", &infoLog[0]);
+                CL_DEBUGBREAK();
+            } else if (type == GL_FRAGMENT_SHADER){
+                ERROR("Fragment shader unable to compile:", &infoLog[0]);
+                CL_DEBUGBREAK();
+            }
 
             return 0;
         }
