@@ -27,9 +27,16 @@ namespace cl{
     void GLClearError();
     bool GLLogCall(const char* function, const char* file, int line);
 
-#define TRACE(...) cl::LogCall(cl::LogPriority::TRACE, "TRACE", __FILE__, __LINE__, __VA_ARGS__);
-#define DEBUG(...) cl::LogCall(cl::LogPriority::DEBUG, "DEBUG", __FILE__, __LINE__, __VA_ARGS__);
-#define INFO(...)  cl::LogCall(cl::LogPriority::INFO,  "INFO" , __FILE__, __LINE__, __VA_ARGS__);
+#ifdef CL_DEBUG
+    #define TRACE(...) cl::LogCall(cl::LogPriority::TRACE, "TRACE", __FILE__, __LINE__, __VA_ARGS__);
+    #define DEBUG(...) cl::LogCall(cl::LogPriority::DEBUG, "DEBUG", __FILE__, __LINE__, __VA_ARGS__);
+    #define INFO(...)  cl::LogCall(cl::LogPriority::INFO,  "INFO" , __FILE__, __LINE__, __VA_ARGS__);
+#else
+    #define TRACE(...)
+    #define DEBUG(...)
+    #define INFO(...)
+#endif
+
 #define WARN(...)  cl::LogCall(cl::LogPriority::WARN,  "WARN" , __FILE__, __LINE__, __VA_ARGS__);
 #define ERROR(...) cl::LogCall(cl::LogPriority::ERROR, "ERROR", __FILE__, __LINE__, __VA_ARGS__);
 #define FATAL(...) cl::LogCall(cl::LogPriority::FATAL, "FATAL", __FILE__, __LINE__, __VA_ARGS__);

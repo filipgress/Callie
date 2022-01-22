@@ -15,28 +15,29 @@
 #include <Events/Event.h>
 #include <Events/ApplicationEvent.h>
 #include <Events/MouseEvent.h>
+#include <Events/KeyEvent.h>
 
 
 const float toRadians = M_PI / 180.0f;
 
 unsigned int indeces[]{
-    0, 1, 2,
-    2, 1, 3,
+    2, 0, 1,
+    3, 2, 1,
     
-    0, 1, 5,
-    5, 4, 0,
+    4, 5, 1,
+    0, 4, 1,
 
-    1, 3, 5,
-    5, 3, 7,
+    1, 5, 7,
+    3, 1, 7,
 
-    2, 3, 7,
     7, 6, 2,
+    3, 7, 2,
     
-    0, 4, 2,
-    2, 4, 6,
+    2, 6, 4,
+    0, 2, 4,
 
-    4, 5, 6,
-    6, 5, 7
+    4, 6, 7,
+    5, 4, 7
  };
 
 cl::Vertex verteces[] = {
@@ -53,21 +54,24 @@ cl::Vertex verteces[] = {
 cl::Window window;
 cl::Camera camera;
 
-static bool MouseScrolledEvent(cl::MouseScrolledEvent e){
-    camera.Zoom(e.GetYOffset()*0.05f);
-    return true;
-}
-
-bool mouse0 = false;
+bool mouse0 = false, mouse1 = false;
 int mouseX=0, mouseY=0;
 int pressedX=0, pressedY=0;
-int deltaX=0, deltaY=0;
+float deltaX=0, deltaY=0;
 static bool MouseMovedEvent(cl::MouseMovedEvent e){
     mouseX = e.GetX();
     mouseY = e.GetY();
 
     if (mouse0){
-        camera.RotateAroundDefault(-(float)(deltaX + mouseX - pressedX)/window.GetWidth()*4, -(float)(deltaY + mouseY - pressedY)/window.GetHeight()*4);
+        float changeX = (float)(mouseX - pressedX)/window.GetWidth();
+        float changeY = (float)(mouseY - pressedY)/window.GetWidth();
+        camera.RotateAroundDefault((deltaX + changeX)*2, (deltaY + changeY)*2);
+        return true;
+    }
+    if (mouse1){
+        camera.Translate((float)(mouseX - pressedX)/window.GetWidth()*4, (float)(mouseY - pressedY)/window.GetHeight()*4);
+        pressedX = mouseX;
+        pressedY = mouseY;
         return true;
     }
     return false;
@@ -81,18 +85,39 @@ static bool MouseButtonPressedEvent(cl::MouseButtonPressedEvent e){
         mouse0 = true;
         return true;
     } 
+    if (e.GetMouseButton() == 1){
+        mouse1 = true;
+        return true;
+    }
     return false;
 }
 
 static bool MouseButtonReleasedEvent(cl::MouseButtonReleasedEvent e){
     if (e.GetMouseButton() == 0){
         mouse0 = false;
-        deltaX += (mouseX - pressedX);
-        deltaY += (mouseY - pressedY);
+        deltaX += (float)(mouseX - pressedX)/window.GetWidth();
+        deltaY += (float)(mouseY - pressedY)/window.GetWidth();
 
         INFO(deltaX);
         return true;
     } 
+    if (e.GetMouseButton() == 1){
+        mouse1 = false;
+        return true;
+    }
+    return false;
+}
+
+static bool MouseScrolledEvent(cl::MouseScrolledEvent e){
+    camera.Zoom(e.GetYOffset()*0.05f);
+    return true;
+}
+
+static bool ButtonPressed(cl::KeyReleasedEvent e){
+    if (e.GetKeyCode() == cl::Key::K){
+        cl::Mesh::s_Viewport = !cl::Mesh::s_Viewport;
+        return true;
+    }
     return false;
 }
 
@@ -100,6 +125,7 @@ static bool Resize(cl::Event& event){
     glViewport(0, 0, window.GetWidth(), window.GetHeight());
     return true;
 }
+
 
 static void EventHandler(cl::Event& event){
     cl::EventDispatcher dispatcher(event);
@@ -110,7 +136,7 @@ static void EventHandler(cl::Event& event){
     dispatcher.Dispatch<cl::MouseButtonReleasedEvent>(MouseButtonReleasedEvent);
 
     dispatcher.Dispatch<cl::MouseScrolledEvent>(MouseScrolledEvent);
-    // dispatcher.Dispatch<cl::MouseButtonPressedEvent>(ButtonPressed);
+    dispatcher.Dispatch<cl::KeyReleasedEvent>(ButtonPressed);
 }
 
 int main(const int argc, const char** argv){
@@ -143,21 +169,21 @@ int main(const int argc, const char** argv){
 
     /* Grid */
     cl::Line grid[] = {
-        cl::Line({ -3.0f,  0.0f, -3.0f }, { 3.0f, 0.0f, -3.0f }, {0.5f, 0.5f, 0.5f, 1.0f}),
-        cl::Line({ -3.0f,  0.0f, -2.0f }, { 3.0f, 0.0f, -2.0f }, {0.5f, 0.5f, 0.5f, 1.0f}),
-        cl::Line({ -3.0f,  0.0f, -1.0f }, { 3.0f, 0.0f, -1.0f }, {0.5f, 0.5f, 0.5f, 1.0f}),
-        cl::Line({ -5.0f,  0.0f,  0.0f }, { 5.0f, 0.0f,  0.0f }, {0.5f, 0.5f, 0.5f, 1.0f}),
-        cl::Line({ -3.0f,  0.0f,  1.0f }, { 3.0f, 0.0f,  1.0f }, {0.5f, 0.5f, 0.5f, 1.0f}),
-        cl::Line({ -3.0f,  0.0f,  2.0f }, { 3.0f, 0.0f,  2.0f }, {0.5f, 0.5f, 0.5f, 1.0f}),
-        cl::Line({ -3.0f,  0.0f,  3.0f }, { 3.0f, 0.0f,  3.0f }, {0.5f, 0.5f, 0.5f, 1.0f}),
+        cl::Line({ -3.0f,  0.0f, -3.0f }, { 3.0f, 0.0f, -3.0f }, {0.3f, 0.3f, 0.3f, 1.0f}),
+        cl::Line({ -3.0f,  0.0f, -2.0f }, { 3.0f, 0.0f, -2.0f }, {0.3f, 0.3f, 0.3f, 1.0f}),
+        cl::Line({ -3.0f,  0.0f, -1.0f }, { 3.0f, 0.0f, -1.0f }, {0.3f, 0.3f, 0.3f, 1.0f}),
+        cl::Line({ -5.0f,  0.0f,  0.0f }, { 5.0f, 0.0f,  0.0f }, {0.3f, 0.3f, 0.3f, 1.0f}),
+        cl::Line({ -3.0f,  0.0f,  1.0f }, { 3.0f, 0.0f,  1.0f }, {0.3f, 0.3f, 0.3f, 1.0f}),
+        cl::Line({ -3.0f,  0.0f,  2.0f }, { 3.0f, 0.0f,  2.0f }, {0.3f, 0.3f, 0.3f, 1.0f}),
+        cl::Line({ -3.0f,  0.0f,  3.0f }, { 3.0f, 0.0f,  3.0f }, {0.3f, 0.3f, 0.3f, 1.0f}),
 
-        cl::Line({ -3.0f,  0.0f, -3.0f }, {-3.0f,  0.0f, 3.0f }, {0.5f, 0.5f, 0.5f, 1.0f}),
-        cl::Line({ -2.0f,  0.0f, -3.0f }, {-2.0f,  0.0f, 3.0f }, {0.5f, 0.5f, 0.5f, 1.0f}),
-        cl::Line({ -1.0f,  0.0f, -3.0f }, {-1.0f,  0.0f, 3.0f }, {0.5f, 0.5f, 0.5f, 1.0f}),
-        cl::Line({  0.0f,  0.0f, -5.0f }, { 0.0f,  0.0f, 5.0f }, {0.5f, 0.5f, 0.5f, 1.0f}),
-        cl::Line({  1.0f,  0.0f, -3.0f }, { 1.0f,  0.0f, 3.0f }, {0.5f, 0.5f, 0.5f, 1.0f}),
-        cl::Line({  2.0f,  0.0f, -3.0f }, { 2.0f,  0.0f, 3.0f }, {0.5f, 0.5f, 0.5f, 1.0f}),
-        cl::Line({  3.0f,  0.0f, -3.0f }, { 3.0f,  0.0f, 3.0f }, {0.5f, 0.5f, 0.5f, 1.0f}),
+        cl::Line({ -3.0f,  0.0f, -3.0f }, {-3.0f,  0.0f, 3.0f }, {0.3f, 0.3f, 0.3f, 1.0f}),
+        cl::Line({ -2.0f,  0.0f, -3.0f }, {-2.0f,  0.0f, 3.0f }, {0.3f, 0.3f, 0.3f, 1.0f}),
+        cl::Line({ -1.0f,  0.0f, -3.0f }, {-1.0f,  0.0f, 3.0f }, {0.3f, 0.3f, 0.3f, 1.0f}),
+        cl::Line({  0.0f,  0.0f, -5.0f }, { 0.0f,  0.0f, 5.0f }, {0.3f, 0.3f, 0.3f, 1.0f}),
+        cl::Line({  1.0f,  0.0f, -3.0f }, { 1.0f,  0.0f, 3.0f }, {0.3f, 0.3f, 0.3f, 1.0f}),
+        cl::Line({  2.0f,  0.0f, -3.0f }, { 2.0f,  0.0f, 3.0f }, {0.3f, 0.3f, 0.3f, 1.0f}),
+        cl::Line({  3.0f,  0.0f, -3.0f }, { 3.0f,  0.0f, 3.0f }, {0.3f, 0.3f, 0.3f, 1.0f}),
 
         cl::Line({  0.0f, -5.0f, 0.0f }, { 0.0f,  5.0f, 0.0f }, {0.5f, 0.5f, 0.5f, 1.0f}),
     };
@@ -167,12 +193,7 @@ int main(const int argc, const char** argv){
     cl::Line yAxis({  0.0f, -0.5f,  0.0f }, { 0.0f,  0.5f, 0.0f }, {0.2f, 1.0f, 0.2f, 1.0f});
     cl::Line zAxis({  0.0f,  0.0f, -0.5f }, { 0.0f,  0.0f, 0.5f }, {0.2f, 0.2f, 1.0f, 1.0f});
 
-    /* Objects */
     cl::Mesh obj(verteces, indeces, sizeof(verteces), 36);
-
-    float triOffset = 1.0f, triIncrement = 0.005f;
-    int currAngle = 0, angleIncrement = 1;
-    float triScale = 0.5f, scaleIncrement = 0.005f;
 
     /* Loop until the user closes the window */
     while (!window.ShouldClose())
@@ -181,33 +202,12 @@ int main(const int argc, const char** argv){
         glClearColor(0.13f, 0.13f, 0.13f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        if (triOffset > 3.0f)
-            triIncrement = -0.005f;
-        else if (triOffset < 1.0f)
-            triIncrement = 0.005f;
-
-        if (currAngle == 360)
-            currAngle -= 360;
-
-        if (triScale >= 0.7f)
-            scaleIncrement = -0.005f;
-        else if(triScale <= 0.3f)
-            scaleIncrement = 0.005f;
-            
-        triOffset += triIncrement;
-        currAngle += angleIncrement;
-        triScale  += scaleIncrement;
-
         shader.Bind();
             glViewport(0, 0, window.GetWidth(), window.GetHeight());
 
             glm::mat4 projection = glm::perspective(45.0f, (GLfloat)window.GetWidth()/window.GetHeight(), 0.1f, 100.0f);
             glm::mat4 view = camera.GetView();
             glm::mat4 model(1.0f);
-
-            // model = glm::translate(model, glm::vec3(0.0f, 0.0f, -10.0f));
-            // model = glm::rotate(model, -currAngle * toRadians, glm::vec3(1.0f, 1.0f, 0.0f));
-            // model = glm::scale(model, glm::vec3(triScale, triScale, triScale));
 
             shader.SetFloat4("setColor", grid[0].GetColor());
             shader.SetMat4("projection", projection);
@@ -222,11 +222,11 @@ int main(const int argc, const char** argv){
             
             /* Axis indicator*/
             glViewport(25, 25, 100, 100);
-            model = glm::mat4(1.0f);
-            projection = glm::perspective(45.0f, (GLfloat)1.0f, 0.1f, 100.0f);
 
-            model = glm::translate(model, glm::vec3(0.0f, 0.0f, -1.1f));
-            // model = glm::rotate(model, -currAngle * toRadians, glm::vec3(1.0f, 1.0f, 0.0f));
+            projection = glm::perspective(45.0f, (GLfloat)1.0f, 0.1f, 100.0f);
+            view = glm::mat4(1.0f);
+            model = glm::mat4(1.0f);
+            model = glm::translate(model, glm::vec3(0.0f, 0.0f, -1.1f)) * camera.GetRotate();
 
             shader.SetMat4("projection", projection);
             shader.SetMat4("view", view);
