@@ -1,7 +1,7 @@
 #pragma once
 
-#include <Events/Event.h>
-#include <Events/MouseCodes.h>
+#include <Window/Event.h>
+#include <Window/MouseCodes.h>
 
 namespace cl{
     class MouseMovedEvent : public Event{

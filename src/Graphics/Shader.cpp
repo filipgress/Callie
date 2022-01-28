@@ -23,7 +23,7 @@ namespace cl{
             std::vector<GLchar> infoLog(length);
             GLCall(glGetProgramInfoLog(m_ShaderID, length, &length, &infoLog[0]));
 
-            ERROR("Shader unable to link or validate:", &infoLog[0]);
+            ERROR("Unable to link shader program:", &infoLog[0]);
             CL_DEBUGBREAK();
             
             GLCall(glDeleteShader(vs));
@@ -46,7 +46,7 @@ namespace cl{
             std::vector<GLchar> infoLog(length);
             GLCall(glGetProgramInfoLog(m_ShaderID, length, &length, &infoLog[0]));
 
-            ERROR("Shader unable to validate:", &infoLog[0]);
+            ERROR("Unable to validate shader program:", &infoLog[0]);
             CL_DEBUGBREAK();
             
             GLCall(glDeleteShader(vs));
@@ -86,10 +86,10 @@ namespace cl{
             GLCall(glGetShaderInfoLog(id, length, &length, &infoLog[0]));
 
             if (type == GL_VERTEX_SHADER){
-                ERROR("Vertex shader unable to compile:", &infoLog[0]);
+                ERROR("Unable to compile vertex shader:", &infoLog[0]);
                 CL_DEBUGBREAK();
             } else if (type == GL_FRAGMENT_SHADER){
-                ERROR("Fragment shader unable to compile:", &infoLog[0]);
+                ERROR("Unable to compile fragment shader:", &infoLog[0]);
                 CL_DEBUGBREAK();
             }
 

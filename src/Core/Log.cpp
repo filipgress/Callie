@@ -1,7 +1,7 @@
 #include <clpch.h>
 
-#include <GL/glew.h>
 #include <Core/Log.h>
+#include <GL/glew.h>
 
 namespace cl{
     LogPriority g_LogLevel = LogPriority::DEBUG;

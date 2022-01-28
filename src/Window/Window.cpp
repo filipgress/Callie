@@ -1,15 +1,16 @@
 #include <clpch.h>
 
-#include <Core/Window.h>
-#include <Events/ApplicationEvent.h>
-#include <Events/KeyEvent.h>
-#include <Events/MouseEvent.h>
+#include <Window/ApplicationEvent.h>
+#include <Window/KeyEvent.h>
+#include <Window/MouseEvent.h>
+
+#include <Window/Window.h>
 
 namespace cl{
     unsigned int Window::s_GLFWWindowCount = 0;
 
 	void Window::GLFWErrorCallback(int error, const char* description){
-        ERROR("GLFW Error:", error, description);
+		CL_CORE_ASSERT("GLFW error:", error, description);
 	}
 
     Window::Window(const WindowProps& props){
@@ -23,17 +24,13 @@ namespace cl{
     }
 
     int Window::Init(){
-
-		INFO("Creating window", m_Data.Title, m_Data.Width, m_Data.Height);
-
         /* Initialize the library */
         if (s_GLFWWindowCount == 0){
             if (!glfwInit()){
-                ERROR("Could not initialize GLFW!")
-                std::cout << "here";
-                CL_DEBUGBREAK();
+				CL_CORE_ASSERT("Could not initialize GLFW!");
                 return -1;
             }
+
             /** Setup GLFW window properties
              *  OpenGL version */
             glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -51,9 +48,8 @@ namespace cl{
         /* Create a windowed mode window and its OpenGL context */
         m_Window = glfwCreateWindow((int)m_Data.Width, (int)m_Data.Height, m_Data.Title.c_str(), nullptr, nullptr);
         if (!m_Window){
-            CL_DEBUGBREAK();
-            ERROR("Could not create GLFW window!")
-            glfwTerminate();
+			CL_CORE_ASSERT("Could not create GLFW window!");
+			Shutdown();
             return -1;
         }
 

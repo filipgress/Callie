@@ -1,7 +1,7 @@
 #pragma once
 
 #include <GLFW/glfw3.h>
-#include <Events/Event.h>
+#include <Window/Event.h>
 
 namespace cl{
 	struct WindowProps
@@ -36,10 +36,10 @@ namespace cl{
 			Window(const WindowProps& props = WindowProps());
 			~Window();
 
+			int Init();
+
 			void OnUpdate();
 
-			// static_cast<GLFWwindow>
-			void* GetNativeWindow() const { return m_Window; }
 			unsigned int GetWidth() const { return m_Data.Width; }
 			unsigned int GetHeight() const { return m_Data.Height; }
 
@@ -49,8 +49,6 @@ namespace cl{
 
 			void SetVSync(bool enabled);
 			bool IsVSync() const;
-
-			int Init();
 		
 		private:
 			void Shutdown();

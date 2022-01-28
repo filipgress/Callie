@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Events/Event.h>
+#include <Window/Event.h>
 
 namespace cl{
     class WindowResizeEvent : public Event{

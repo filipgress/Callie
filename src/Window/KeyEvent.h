@@ -1,7 +1,7 @@
 #pragma once
 
-#include <Events/Event.h>
-#include <Events/KeyCodes.h>
+#include <Window/Event.h>
+#include <Window/KeyCodes.h>
 
 namespace cl{
     // Should be used as interface for KeyEvents

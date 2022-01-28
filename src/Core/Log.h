@@ -1,7 +1,5 @@
 #pragma once
 
-#include <Core/Base.h>
-
 namespace cl{
     enum class LogPriority { TRACE, DEBUG, INFO, WARN, ERROR, FATAL };
     extern LogPriority g_LogLevel;

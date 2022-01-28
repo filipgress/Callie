@@ -9,16 +9,18 @@ project(Callie
 
 add_executable(${PROJECT_NAME}
     src/Core/EntryPoint.cpp
-    src/Core/Window.cpp
-    src/Core/Camera.cpp
+    src/Core/Application.cpp
+    src/Core/Object.cpp
     src/Core/Log.cpp
-    src/Core/Mesh.cpp
-    src/Core/Line.cpp
-    
+
+    src/Window/Window.cpp
+
+    src/Graphics/Renderer.cpp
+    src/Graphics/Camera.cpp
+    src/Graphics/Shader.cpp
     src/Graphics/VertexArray.cpp
     src/Graphics/IndexBuffer.cpp
     src/Graphics/VertexBuffer.cpp
-    src/Graphics/Shader.cpp
 )
 
 configure_file(
