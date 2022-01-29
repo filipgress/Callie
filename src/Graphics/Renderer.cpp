@@ -32,9 +32,10 @@ namespace cl{
     }
 
     void Renderer::Draw(unsigned int count, bool isWireframe=false){
-        if (!isWireframe)
+        if (!isWireframe){
             GLCall(glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_INT, 0));
-        else
+        } else{
             GLCall(glDrawElements(GL_LINES, count, GL_UNSIGNED_INT, 0));
+        }
     }
 }

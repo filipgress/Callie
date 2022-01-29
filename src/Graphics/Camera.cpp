@@ -6,7 +6,7 @@
 namespace cl{
     Camera::Camera(glm::vec3 position, glm::vec3 target, glm::vec3 up, float near, float far)
         : m_Position(position), m_Direction(target), m_Near(near), m_Far(far), 
-          m_Projection(CameraMode::Perspective), m_Wireframe(false) {
+          m_Projection(CameraMode::Perspective), m_Wireframe(false), changeX(0), changeY(0) {
             m_Up = glm::normalize(up);
             m_OriginalUp = m_Up;
 
@@ -15,9 +15,12 @@ namespace cl{
         }
 
     void Camera::RotateAroundTarget(glm::vec3 target, float deltaX, float deltaY){
+        changeX += deltaX;
+        changeY += deltaY;
+
         glm::mat4 M = glm::mat4(1.0f);
-        M = glm::rotate(M, -deltaX, glm::vec3(0, 1, 0));
-        M = glm::rotate(M, -deltaY, glm::vec3(1, 0, 0));
+        M = glm::rotate(M, -changeX*5, glm::vec3(0, 1, 0));
+        M = glm::rotate(M, -changeY*5, glm::vec3(1, 0, 0));
 
         m_Direction = target;
         glm::vec3 T = glm::vec3(0, 0, glm::distance(m_Direction, m_Position));
@@ -37,15 +40,18 @@ namespace cl{
     }
 
     void Camera::Zoom(float delta){
-        float distance = std::clamp(glm::length(m_Direction - m_Position), 0.0f, 3.0f);
-        m_Position = m_Direction + (m_Position - m_Direction) * delta; //* distance;
+        float distance = std::clamp(glm::length(m_Direction - m_Position)/2, 0.0f, 1.0f);
+        m_Position = m_Direction + (m_Position - m_Direction) * (1 + delta * distance);
     }
 
     void Camera::Translate(float deltaX, float deltaY){
-        m_Position  -= m_Right * deltaX;
+        deltaX *=5.0f;
+        deltaY *=5.0f;
+
+        m_Position  += m_Right * deltaX;
         m_Position  += m_Up * deltaY;
 
-        m_Direction -= m_Right * deltaX;
+        m_Direction += m_Right * deltaX;
         m_Direction += m_Up * deltaY;
     }
 

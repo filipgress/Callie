@@ -20,6 +20,8 @@ namespace cl{
             CameraMode m_Projection;
             bool m_Wireframe;
 
+            float changeX, changeY;
+
         public:
             Camera(glm::vec3 position = glm::vec3(0.0f, 0.0f, 5.0f), glm::vec3 target = glm::vec3(0.0f, 0.0f, 0.0f), 
                 glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f), float near=0.1f, float far=1000.0f);
@@ -32,9 +34,8 @@ namespace cl{
             inline void SetProjection(CameraMode mode) { m_Projection  = mode; }
             inline CameraMode GetProjection() const { return m_Projection; }
 
-            inline void EnableWireframe() { m_Wireframe = true; }
-            inline void DisableWireframe() { m_Wireframe = false; }
-            inline bool GetMode() const { return  m_Wireframe; }
+            inline void ToggleWireframe() { m_Wireframe = !m_Wireframe; }
+            inline bool GetMode() const { return m_Wireframe; }
         
             void Translate(float deltaX, float DeltaY);
             void RotateAroundTarget(glm::vec3 target, float deltaX, float deltaY);
