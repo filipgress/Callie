@@ -40,7 +40,7 @@ namespace cl{
     }
 
     void Camera::Zoom(float delta){
-        float distance = std::clamp(glm::length(m_Direction - m_Position)/2, 0.0f, 1.0f);
+        float distance = std::clamp(GetDistance()*10, 0.0f, 3.5f);
         m_Position = m_Direction + (m_Position - m_Direction) * (1 + delta * distance);
     }
 
@@ -57,5 +57,17 @@ namespace cl{
 
     glm::mat4 Camera::GetView() const{
         return glm::lookAt(m_Position, m_Direction, m_Up);
+    }
+
+    float Camera::GetDistance() const{
+        return glm::length(m_Direction - m_Position);
+    }
+
+    void Camera::ToggleProjection(){
+        if (m_Projection == CameraMode::Perspective){
+            m_Projection = CameraMode::Orthografic;
+        } else{
+            m_Projection = CameraMode::Perspective;
+        }
     }
 }

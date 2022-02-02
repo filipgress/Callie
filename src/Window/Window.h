@@ -42,6 +42,7 @@ namespace cl{
 
 			unsigned int GetWidth() const { return m_Data.Width; }
 			unsigned int GetHeight() const { return m_Data.Height; }
+			void* GetNativeWindow() const { return m_Window; }
 
 			// Window Attribs
 			bool ShouldClose() const { return glfwWindowShouldClose(m_Window); }

@@ -34,6 +34,7 @@ namespace cl{
             virtual const char* GetName() const = 0;
             virtual int GetCategoryFlags() const = 0;
             virtual std::string ToString() const { return GetName(); }
+            bool isHandled() const { return Handled; } 
 
             inline bool IsInCatergory(EventCategory category) const{
                 return GetCategoryFlags() & category;

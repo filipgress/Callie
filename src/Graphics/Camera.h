@@ -30,17 +30,18 @@ namespace cl{
 
             inline float GetNear() const { return m_Near; }
             inline float GetFar() const { return m_Far; }
+            float GetDistance() const;
 
-            inline void SetProjection(CameraMode mode) { m_Projection  = mode; }
+            void ToggleProjection();
             inline CameraMode GetProjection() const { return m_Projection; }
 
             inline void ToggleWireframe() { m_Wireframe = !m_Wireframe; }
             inline bool GetMode() const { return m_Wireframe; }
         
-            void Translate(float deltaX, float DeltaY);
             void RotateAroundTarget(glm::vec3 target, float deltaX, float deltaY);
             void RotateAroundOrigin(float deltaX, float deltaY);
             void RotateAroundDefault(float deltaX, float deltaY);
+            void Translate(float deltaX, float DeltaY);
             void Zoom(float delta);
     };
 }
