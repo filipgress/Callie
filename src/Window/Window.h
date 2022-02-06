@@ -11,8 +11,8 @@ namespace cl{
 		uint32_t Height;
 
 		WindowProps(const std::string& title = "Callie Editor",
-			        uint32_t width = 1600,
-			        uint32_t height = 900)
+			        uint32_t width = 1100,
+			        uint32_t height = 650)
 			: Title(title), Width(width), Height(height) {}
 	};
 

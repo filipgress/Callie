@@ -4,9 +4,9 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 namespace cl{
-    Object::Object(Vertex* verteces, unsigned int size,
+    Object::Object(const std::string name, Vertex* verteces, unsigned int size,
         unsigned int* indeces, unsigned int count, bool visible)
-        : m_IBO(indeces, count), m_VBO(verteces, size), m_Visible(visible), m_Pos(glm::vec3(0.0f)),
+        : m_Name(name), m_IBO(indeces, count), m_VBO(verteces, size), m_Visible(visible), m_Pos(glm::vec3(0.0f)),
           m_Rot(glm::vec3(0.0f)), m_Scale(glm::vec3(1.0f)), m_Color(glm::vec4(1.0f)) {
             m_Layout.Push<float>(3);
             m_VAO.AddBuffer(m_VBO, m_Layout);

@@ -1,8 +1,9 @@
 #pragma once
 
-#include <Core/LayerStack.h>
-#include <Core/RenderLayer.h>
+#include <Core/PropertyPanel.h>
+#include <Core/SceneView.h>
 
+#include <GL/glew.h>
 #include <Window/Window.h>
 #include <Window/ApplicationEvent.h>
 
@@ -21,10 +22,13 @@ namespace cl{
         private:
             ApplicationCommandLineArgs m_CommandLineArgs;
             Scope<Window> m_Window;
-            LayerStack m_LayerStack;
+
+            Scope<PropertyPanel> m_Panel;
+            Scope<SceneView> m_Scene;
 
             bool m_Running;
             bool m_Minimized;
+
             bool m_Initialized;
             float m_LastFrameTime;
 
@@ -33,9 +37,12 @@ namespace cl{
         public:
             Application(const std::string& name);
             void Run();
+            inline void Close() { m_Running = false; }
 
             Window& GetWindow() { return *m_Window; }
+            SceneView& GetScene() { return *m_Scene; }
             static Application& Get() { return *s_Instance; }
+
 
         private:
             bool OnWindowClose(WindowCloseEvent& e);

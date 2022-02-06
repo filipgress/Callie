@@ -15,6 +15,7 @@ namespace cl{
 
     class Object{
         private:
+            const std::string m_Name;
             VertexArray m_VAO;
             VertexBuffer m_VBO;
             IndexBuffer m_IBO;
@@ -28,14 +29,14 @@ namespace cl{
             bool m_Visible;
 
         public:
-            Object(Vertex* verteces, unsigned int size, unsigned int* indeces,
+            Object(const std::string name, Vertex* verteces, unsigned int size, unsigned int* indeces,
                 unsigned int count, bool visible = true);
 
-            inline void SetPos(glm::vec3 position) { m_Pos   = position; }
-            inline void SetRot(glm::vec3 rotation) { m_Rot   = rotation; }
-            inline void SetScale(glm::vec3 scale)  { m_Scale = scale; }
-            inline void SetColor(glm::vec4 color)  { m_Color = color; }
-            inline glm::vec4 GetColor() const { return m_Color; }
+            inline const std::string& GetName() const { return m_Name; }
+            inline glm::vec4& GetColor() { return m_Color; }
+            inline glm::vec3& GetPos() { return m_Pos; }
+            inline glm::vec3& GetRot() { return m_Rot; }
+            inline glm::vec3& GetScale() { return m_Scale; }
 
             inline bool IsVisible() const { return m_Visible; }
             inline void Hide() { m_Visible = false; }

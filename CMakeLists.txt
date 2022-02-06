@@ -11,14 +11,15 @@ add_executable(${PROJECT_NAME}
     src/Core/EntryPoint.cpp
     src/Core/Application.cpp
     src/Core/LayerStack.cpp
-    src/Core/RenderLayer.cpp
+    src/Core/SceneView.cpp
+    src/Core/PropertyPanel.cpp
     src/Core/Object.cpp
     src/Core/Log.cpp
 
     src/Window/Window.cpp
-    src/ImGui/ImGuiLayer.cpp
 
     src/Graphics/Renderer.cpp
+    src/Graphics/UIRenderer.cpp
     src/Graphics/FrameBuffer.cpp
     src/Graphics/Camera.cpp
     src/Graphics/Shader.cpp
@@ -38,10 +39,10 @@ find_package(GLEW   REQUIRED)
 find_package(glfw3  REQUIRED)
 find_package(glm    REQUIRED)
 
-add_subdirectory(src/ImGui/Vendor)
+add_subdirectory(src/ImGui)
 target_link_libraries(${PROJECT_NAME} PRIVATE GL GLEW glfw imgui ${CMAKE_DL_LIBS})
 target_precompile_headers(${PROJECT_NAME} PRIVATE src/clpch.h)
 target_include_directories(${PROJECT_NAME} 
     PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src
-    PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src/ImGui/Vendor
+    PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src/ImGui
 )

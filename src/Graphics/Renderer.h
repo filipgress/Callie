@@ -1,8 +1,6 @@
 #pragma once
 
 #include <glm/glm.hpp>
-#include <Graphics/Camera.h>
-#include <Graphics/Shader.h>
 
 namespace cl{
     class Renderer{

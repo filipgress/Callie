@@ -1,9 +1,10 @@
 #include <clpch.h>
 
-#include <Graphics/Renderer.h>
 #include <Core/Config.h>
 #include <Core/Application.h>
-#include <ImGui/ImGuiLayer.h>
+
+#include <Graphics/Renderer.h>
+#include <Graphics/UIRenderer.h>
 
 namespace cl{
     Application* Application::s_Instance = nullptr;
@@ -11,7 +12,7 @@ namespace cl{
         : m_Running(true), m_Minimized(false), m_Initialized(false) {
         s_Instance = this;
 
-        // Window initialization
+        // Window init 
         m_Window = std::make_unique<Window>(name);
 
         if(m_Window->Init() == -1)
@@ -19,16 +20,19 @@ namespace cl{
 
         m_Window->SetEventCallback(CL_BIND_CALLBACK_FN(Application::OnEvent));
 
-        // OpenGL initializatioiln
+        // OpenGL init 
         if(Renderer::Init() == -1)
             return;
 
-        Renderer::OnWindowResize(m_Window->GetWidth(), m_Window->GetHeight());
         Renderer::SetClearColor(glm::vec4(0.13f, 0.13f, 0.13f, 1.0f));
 
-        // LayerStack
-        m_LayerStack.PushLayer(new ImGuiLayer());
-        m_LayerStack.PushLayer(new RenderLayer());
+        // UI init
+        UIRenderer::Init();
+
+        m_Panel = std::make_unique<PropertyPanel>();
+        m_Scene = std::make_unique<SceneView>();
+
+        // m_Panel.SetLoadCallback();
 
         // Introduce yourself
         INFO("OpenGL Info: ");
@@ -46,11 +50,14 @@ namespace cl{
                 m_LastFrameTime = time;
                 
                 if (!m_Minimized){
+                    Renderer::SetViewport(0, 0, m_Window->GetWidth(), m_Window->GetHeight());
                     Renderer::Clear();
+                    UIRenderer::Clear();
 
-                    for (Layer* layer : m_LayerStack)
-                        layer->OnUpdate(deltaTime);
+                    m_Scene->OnUpdate(deltaTime);
+                    m_Panel->OnUpdate();
 
+                    UIRenderer::Render();
                     m_Window->OnUpdate();
                 }
             }
@@ -63,11 +70,11 @@ namespace cl{
         dispatcher.Dispatch<WindowResizeEvent>(CL_BIND_CALLBACK_FN(Application::OnWindowResize));
         dispatcher.Dispatch<WindowCloseEvent>(CL_BIND_CALLBACK_FN(Application::OnWindowClose));
 
-        for (auto layer = m_LayerStack.rbegin(); layer != m_LayerStack.rend(); layer++){
-            if (e.isHandled())
-                break;
-            (*layer)->OnEvent(e);
-        }
+        if (!e.isHandled())
+            m_Panel->OnEvent(e);
+
+        if (!e.isHandled())
+            m_Scene->OnEvent(e);
     }
 
     bool Application::OnWindowClose(WindowCloseEvent& e){
