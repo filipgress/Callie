@@ -32,7 +32,7 @@ namespace cl{
         m_Panel = std::make_unique<PropertyPanel>();
         m_Scene = std::make_unique<SceneView>();
 
-        // m_Panel.SetLoadCallback();
+        m_Panel->SetLoadCallback(CL_BIND_CALLBACK_FN(Application::OnLoadFile));
 
         // Introduce yourself
         INFO("OpenGL Info: ");
@@ -91,5 +91,9 @@ namespace cl{
         Renderer::OnWindowResize(e.GetWidth(), e.GetHeight());
 
         return true;
+    }
+
+    bool Application::OnLoadFile(const std::string& filename){
+        return m_Scene->LoadMesh(filename, m_Panel->GetMode());
     }
 }

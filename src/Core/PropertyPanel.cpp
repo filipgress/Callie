@@ -3,12 +3,37 @@
 #include <Core/PropertyPanel.h>
 #include <Core/Application.h>
 
-namespace cl{
-    PropertyPanel::PropertyPanel(){
-        m_CurrentFile = "< ... >";
+/**
+ * TODO:
+ *      - Quads loading
+ *      - Directional light
+ *      - Recently opened
+ *      - Close
+ *      - Grid
+ *      - Axis Indicator
+ */
 
-        m_FileDialog.SetTitle("Open");
-        m_FileDialog.SetFileFilters({ ".fgx", ".obj" });
+namespace cl{
+    PropertyPanel::PropertyPanel()
+        : m_Control(false) {
+        m_FileDialog.SetFileFilters({ ".obj" });
+    }
+
+    PropertyPanel::~PropertyPanel(){
+        std::ofstream file("internal_saving_file.bin", 
+            std::ios::out | std::ios::binary);
+
+        if (!file.is_open()){
+            CL_CORE_ASSERT("Unable to save state of program.");
+        }
+
+        file << m_OpenedFiles.str();
+        file.close();
+    }
+
+    void PropertyPanel::SetLoadCallback(CallbackFn callback) { 
+        m_MeshLoadCallback = callback; 
+        LoadObjects();
     }
 
     void PropertyPanel::OnUpdate(){
@@ -18,6 +43,13 @@ namespace cl{
         if (ImGui::BeginMainMenuBar()){
             if (ImGui::BeginMenu("File")){
                 if (ImGui::MenuItem("Open", "Ctrl+o")) {
+                    m_FileDialog.SetTitle("Open");
+                    m_Mode = true;
+                    m_FileDialog.Open();
+                }
+                if (ImGui::MenuItem("Import", "Ctrl-i")){
+                    m_FileDialog.SetTitle("Import");
+                    m_Mode = false;
                     m_FileDialog.Open();
                 }
                 if (ImGui::BeginMenu("Open Recent")){
@@ -28,7 +60,16 @@ namespace cl{
                 }
 
                 ImGui::Separator();
-                if (ImGui::MenuItem("Close all", "Ctrl+x")) {}
+                if (ImGui::MenuItem("Close all", "Ctrl+x")) {
+                    scene.m_Objects.clear();
+                    m_OpenedFiles.str("../examples/cube.obj");
+                }
+                if (ImGui::BeginMenu("Close")){
+                    ImGui::MenuItem("fish_hat.c");
+                    ImGui::MenuItem("fish_hat.inl");
+                    ImGui::MenuItem("fish_hat.h");
+                    ImGui::EndMenu();
+                }
                 if (ImGui::MenuItem("Quit", "Alt+F4")) {
                     app.Close();
                 }
@@ -88,9 +129,13 @@ namespace cl{
         m_FileDialog.Display();
         if (m_FileDialog.HasSelected()){
             auto file_path = m_FileDialog.GetSelected().string();
-            m_CurrentFile = file_path.substr(file_path.find_last_of("/\\") + 1);
-
-            m_MeshLoadCallback(file_path);
+            
+            if (m_MeshLoadCallback(file_path)){
+                if(m_Mode){
+                    m_OpenedFiles.str("");
+                }
+                m_OpenedFiles << file_path << "\n";
+            }
 
             m_FileDialog.ClearSelected();
         }
@@ -110,10 +155,35 @@ namespace cl{
     }
 
     bool PropertyPanel::OnKeyPressed(KeyPressedEvent& e){
+		Application& app = Application::Get();
+        SceneView& scene = app.GetScene();
+
         KeyCode key = e.GetKeyCode();
         if (key == Key::LeftControl)
             m_Control = true;
 
+        if (m_Control){
+            switch(key){
+                case Key::O:
+                    if (!m_FileDialog.IsOpened()){
+                        m_FileDialog.SetTitle("Open");
+                        m_Mode = true;
+                        m_FileDialog.Open();
+                    }
+                    break;
+                case Key::I:
+                    if (!m_FileDialog.IsOpened()){
+                        m_FileDialog.SetTitle("Import");
+                        m_Mode = false;
+                        m_FileDialog.Open();
+                    }
+                    break;
+                case Key::X:
+                    scene.m_Objects.clear();
+                    m_OpenedFiles.str("../examples/cube.obj");
+                    break; 
+            }
+        }
         if (key == Key::O && m_Control){
             if (!m_FileDialog.IsOpened())
                 m_FileDialog.Open();
@@ -128,5 +198,22 @@ namespace cl{
             m_Control = false;
         
         return false;
+    }
+
+    void PropertyPanel::LoadObjects(){
+        std::ifstream stream("internal_saving_file.bin", std::ios::in | std::ios::binary);
+
+        if(!stream.is_open()){
+            CL_CORE_ASSERT("Unable to load previous session! Internal file: 'internal_saving_file.bin' is not accessible!");
+        }
+
+        std::string line;
+        while(getline(stream, line)){
+            if (m_MeshLoadCallback(line)){
+                m_OpenedFiles << line << "\n";
+            }
+        }
+
+        stream.close();
     }
 }

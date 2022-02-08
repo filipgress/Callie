@@ -47,6 +47,7 @@ namespace cl{
         private:
             bool OnWindowClose(WindowCloseEvent& e);
             bool OnWindowResize(WindowResizeEvent& e);
+            bool OnLoadFile(const std::string& filename);
             void OnEvent(Event& e);
     };
 }

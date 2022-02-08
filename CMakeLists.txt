@@ -38,9 +38,10 @@ find_package(OpenGL REQUIRED)
 find_package(GLEW   REQUIRED)
 find_package(glfw3  REQUIRED)
 find_package(glm    REQUIRED)
+find_package(assimp REQUIRED)
 
 add_subdirectory(src/ImGui)
-target_link_libraries(${PROJECT_NAME} PRIVATE GL GLEW glfw imgui ${CMAKE_DL_LIBS})
+target_link_libraries(${PROJECT_NAME} PRIVATE GL GLEW glfw assimp imgui ${CMAKE_DL_LIBS})
 target_precompile_headers(${PROJECT_NAME} PRIVATE src/clpch.h)
 target_include_directories(${PROJECT_NAME} 
     PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src

@@ -12,6 +12,7 @@
 namespace cl{
     class SceneView{
         friend class PropertyPanel;
+        friend bool LoadMesh(const std::string& filepath);
         private:
             Scope<Shader> m_Program;
             Scope<Camera> m_Camera;
@@ -28,6 +29,14 @@ namespace cl{
             const std::string& c_VertexShader   = "../res/shaders/VertexShader.shader";
             const std::string& c_FragmentShader = "../res/shaders/FragmentShader.shader";
 
+        public:
+            SceneView();
+
+            bool LoadMesh(const std::string& filepath, bool clear = false);
+            void OnUpdate(float ts);
+            void OnEvent(Event& e);
+
+        private:
             bool OnMouseMoved(MouseMovedEvent& e);
             bool OnScrolled(MouseScrolledEvent& e);
             bool OnMousePressed(MouseButtonPressedEvent& e);
@@ -36,10 +45,6 @@ namespace cl{
             bool OnKeyPressed(KeyPressedEvent& e);
             bool OnKeyReleased(KeyReleasedEvent& e);
 
-        public:
-            SceneView();
-
-            void OnUpdate(float ts);
-            void OnEvent(Event& e);
+            std::vector<uint32_t> tokenize(const std::string& line, const char token);
     };
 }

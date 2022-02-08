@@ -1,2 +1,4 @@
 # Callie
-Lightweight 3D modeling software (final year project).
+(Final year project)  
+Simple 3D Loader/Viewer implemented in C++ using **OpenGL**.  
+Other dependencies are: GLEW, GLFW, ImGui, Assimp  

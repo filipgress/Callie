@@ -7,22 +7,27 @@
 
 namespace cl{
     class PropertyPanel{
-		using CallbackFn = std::function<void(const std::string&)>;
+		using CallbackFn = std::function<bool(const std::string&)>;
         private:
             ImGui::FileBrowser m_FileDialog;
-            std::string m_CurrentFile;
             CallbackFn m_MeshLoadCallback;
-            bool m_Control = false;
+
+            bool m_Mode, m_Control;
+            std::stringstream m_OpenedFiles;
 
         public:
             PropertyPanel();
+            ~PropertyPanel();
 
             void OnUpdate();
             void OnEvent(Event& e);
-            void SetLoadCallback(CallbackFn callback) { m_MeshLoadCallback = callback; }
+            void SetLoadCallback(CallbackFn callback);
+            inline bool GetMode() const { return m_Mode; }
 
         private:
             bool OnKeyPressed(KeyPressedEvent& e);
             bool OnKeyReleased(KeyReleasedEvent& e);
+
+            void LoadObjects();
     };
 }

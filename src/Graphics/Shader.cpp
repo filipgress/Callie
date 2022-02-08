@@ -23,8 +23,7 @@ namespace cl{
             std::vector<GLchar> infoLog(length);
             GLCall(glGetProgramInfoLog(m_ShaderID, length, &length, &infoLog[0]));
 
-            ERROR("Unable to link shader program:", &infoLog[0]);
-            CL_DEBUGBREAK();
+            CL_CORE_ASSERT("Unable to link shader program:", &infoLog[0]);
             
             GLCall(glDeleteShader(vs));
             GLCall(glDeleteShader(fs));
@@ -46,8 +45,7 @@ namespace cl{
             std::vector<GLchar> infoLog(length);
             GLCall(glGetProgramInfoLog(m_ShaderID, length, &length, &infoLog[0]));
 
-            ERROR("Unable to validate shader program:", &infoLog[0]);
-            CL_DEBUGBREAK();
+            CL_CORE_ASSERT("Unable to validate shader program:", &infoLog[0]);
             
             GLCall(glDeleteShader(vs));
             GLCall(glDeleteShader(fs));
@@ -86,11 +84,9 @@ namespace cl{
             GLCall(glGetShaderInfoLog(id, length, &length, &infoLog[0]));
 
             if (type == GL_VERTEX_SHADER){
-                ERROR("Unable to compile vertex shader:", &infoLog[0]);
-                CL_DEBUGBREAK();
+                CL_CORE_ASSERT("Unable to compile vertex shader:", &infoLog[0]);
             } else if (type == GL_FRAGMENT_SHADER){
-                ERROR("Unable to compile fragment shader:", &infoLog[0]);
-                CL_DEBUGBREAK();
+                CL_CORE_ASSERT("Unable to compile fragment shader:", &infoLog[0]);
             }
 
             return 0;
@@ -104,8 +100,7 @@ namespace cl{
         std::string shaderSource = "";
 
         if(!stream.is_open()){
-            ERROR("Failed to read:", filepath)
-            CL_DEBUGBREAK();
+            CL_CORE_ASSERT("Failed to read:", filepath)
 
             stream.close();
             return "";

@@ -4,37 +4,6 @@
 #include <Graphics/Renderer.h>
 #include <Core/SceneView.h>
 
-unsigned int indeces[]{
-    2, 0, 1,
-    3, 2, 1,
-    
-    4, 5, 1,
-    0, 4, 1,
-
-    1, 5, 7,
-    3, 1, 7,
-
-    7, 6, 2,
-    3, 7, 2,
-    
-    2, 6, 4,
-    0, 2, 4,
-
-    4, 6, 7,
-    5, 4, 7
- };
-
-cl::Vertex verteces[] = {
-    cl::Vertex({ -1.0f, -1.0f,  1.0f }),
-    cl::Vertex({  1.0f, -1.0f,  1.0f }),
-    cl::Vertex({ -1.0f, -1.0f, -1.0f }),
-    cl::Vertex({  1.0f, -1.0f, -1.0f }),
-    cl::Vertex({ -1.0f,  1.0f,  1.0f }),
-    cl::Vertex({  1.0f,  1.0f,  1.0f }),
-    cl::Vertex({ -1.0f,  1.0f, -1.0f }),
-    cl::Vertex({  1.0f,  1.0f, -1.0f }),
-};
-
 namespace cl{
     SceneView::SceneView() 
         : m_KeyStatus{0}, m_MouseStatus{0} {
@@ -44,8 +13,7 @@ namespace cl{
         m_Program = std::make_unique<Shader>(c_VertexShader, c_FragmentShader);
         m_Camera = std::make_unique<cl::Camera>();
 
-        m_Objects.push_back( std::make_unique<cl::Object>("Obj1", verteces, sizeof(verteces), indeces, 36) );
-        m_Objects.push_back( std::make_unique<cl::Object>("Obj2", verteces, sizeof(verteces), indeces, 36) );
+        // LoadMesh("../examples/cube.obj");
     }
 
     void SceneView::OnUpdate(float ts) {
@@ -99,12 +67,63 @@ namespace cl{
         ImGui::End();
     }
 
+    // very basic implementation...
+    // not all files will be able to open correctly
+    // but for now it works just fine i guess
+    bool SceneView::LoadMesh(const std::string& filepath, bool clear){
+        std::string name = filepath.substr(filepath.find_last_of("/\\") + 1);
+
+        std::ifstream stream(filepath, std::ios::in);
+        if(!stream.is_open()){
+            CL_CORE_ASSERT("Failed to open file:", filepath);
+
+            return false;
+        }
+
+        std::vector<Vertex> verteces;
+        std::vector<unsigned int> indeces;
+
+        std::string line;
+        while(getline(stream, line)){
+            std::stringstream ss(line);
+            std::string id;
+            ss >> id;
+
+            if (id == "v"){
+                glm::vec3 v;
+                ss >> v.x >> v.y >> v.z;
+
+                verteces.push_back(Vertex(v));
+            } 
+            else if (id == "f"){
+                // TODO: implement quads, normals, UVs
+                std::string v1, v2,  v3;
+                ss >> v1 >> v2 >> v3;
+
+                uint32_t vert_idx[3];
+                vert_idx[0] = tokenize(v1, '/').at(0);
+                vert_idx[1] = tokenize(v2, '/').at(0);
+                vert_idx[2] = tokenize(v3, '/').at(0);
+
+                indeces.push_back(vert_idx[0] - 1);
+                indeces.push_back(vert_idx[1] - 1);
+                indeces.push_back(vert_idx[2] - 1);
+            }
+        }
+
+        if (clear)
+            m_Objects.clear();
+        m_Objects.push_back(std::make_unique<cl::Object>(name, verteces, indeces));
+
+        stream.close();
+        return true;
+    }
+
     void SceneView::OnEvent(Event& e) {
         cl::EventDispatcher dispatcher(e);
 
         if(!m_Blocked){
             dispatcher.Dispatch<cl::MouseScrolledEvent>(CL_BIND_CALLBACK_FN(SceneView::OnScrolled));
-
             dispatcher.Dispatch<cl::MouseButtonPressedEvent>(CL_BIND_CALLBACK_FN(SceneView::OnMousePressed));
         }
         if(m_KeyInput){
@@ -187,5 +206,17 @@ namespace cl{
     bool SceneView::OnKeyReleased(KeyReleasedEvent& e){
         m_KeyStatus[e.GetKeyCode()] = false;
         return true;
+    }
+
+    std::vector<uint32_t> SceneView::tokenize(const std::string& line, const char token){
+        std::vector<uint32_t> result;
+        
+        std::stringstream ss(line);
+        std::string item;
+        while (std::getline(ss, item, token))
+        if (!item.empty())
+            result.push_back(std::stoi(item));
+
+        return result;
     }
 }
