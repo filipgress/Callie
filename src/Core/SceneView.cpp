@@ -4,16 +4,52 @@
 #include <Graphics/Renderer.h>
 #include <Core/SceneView.h>
 
+
 namespace cl{
+
     SceneView::SceneView() 
-        : m_KeyStatus{0}, m_MouseStatus{0} {
+        : m_KeyStatus{0}, m_MouseStatus{0},
+          xAxis({ -1.0f,  0.0f,  0.0f }, { 1.0f,  0.0f, 0.0f }, {1.0f, 0.2f, 0.2f, 1.0f}),
+          yAxis({  0.0f, -1.0f,  0.0f }, { 0.0f,  1.0f, 0.0f }, {0.2f, 1.0f, 0.2f, 1.0f}),
+          zAxis({  0.0f,  0.0f, -1.0f }, { 0.0f,  0.0f, 1.0f }, {0.4f, 0.4f, 1.0f, 1.0f}),
+          Grid{
+            cl::Line({ -3.0f,  0.0f, -3.0f }, { 3.0f, 0.0f, -3.0f }, {0.3f, 0.3f, 0.3f, 1.0f}),
+            cl::Line({ -3.0f,  0.0f, -2.0f }, { 3.0f, 0.0f, -2.0f }, {0.3f, 0.3f, 0.3f, 1.0f}),
+            cl::Line({ -3.0f,  0.0f, -1.0f }, { 3.0f, 0.0f, -1.0f }, {0.3f, 0.3f, 0.3f, 1.0f}),
+            cl::Line({ -5.0f,  0.0f,  0.0f }, { 5.0f, 0.0f,  0.0f }, {0.3f, 0.3f, 0.3f, 1.0f}),
+            cl::Line({ -3.0f,  0.0f,  1.0f }, { 3.0f, 0.0f,  1.0f }, {0.3f, 0.3f, 0.3f, 1.0f}),
+            cl::Line({ -3.0f,  0.0f,  2.0f }, { 3.0f, 0.0f,  2.0f }, {0.3f, 0.3f, 0.3f, 1.0f}),
+            cl::Line({ -3.0f,  0.0f,  3.0f }, { 3.0f, 0.0f,  3.0f }, {0.3f, 0.3f, 0.3f, 1.0f}),
+
+            cl::Line({ -3.0f,  0.0f, -3.0f }, {-3.0f,  0.0f, 3.0f }, {0.3f, 0.3f, 0.3f, 1.0f}),
+            cl::Line({ -2.0f,  0.0f, -3.0f }, {-2.0f,  0.0f, 3.0f }, {0.3f, 0.3f, 0.3f, 1.0f}),
+            cl::Line({ -1.0f,  0.0f, -3.0f }, {-1.0f,  0.0f, 3.0f }, {0.3f, 0.3f, 0.3f, 1.0f}),
+            cl::Line({  0.0f,  0.0f, -5.0f }, { 0.0f,  0.0f, 5.0f }, {0.3f, 0.3f, 0.3f, 1.0f}),
+            cl::Line({  1.0f,  0.0f, -3.0f }, { 1.0f,  0.0f, 3.0f }, {0.3f, 0.3f, 0.3f, 1.0f}),
+            cl::Line({  2.0f,  0.0f, -3.0f }, { 2.0f,  0.0f, 3.0f }, {0.3f, 0.3f, 0.3f, 1.0f}),
+            cl::Line({  3.0f,  0.0f, -3.0f }, { 3.0f,  0.0f, 3.0f }, {0.3f, 0.3f, 0.3f, 1.0f}),
+
+            cl::Line({  0.0f, -5.0f, 0.0f }, { 0.0f,  5.0f, 0.0f }, {0.5f, 0.5f, 0.5f, 1.0f})
+          } {
         m_Frame = std::make_unique<FrameBuffer>();
-        m_Frame->CreateBuffers(800, 500);
+        m_Frame->CreateBuffers(800, 800);
 
         m_Program = std::make_unique<Shader>(c_VertexShader, c_FragmentShader);
         m_Camera = std::make_unique<cl::Camera>();
+    }
 
-        // LoadMesh("../examples/cube.obj");
+    SceneView::~SceneView(){
+        std::ofstream file("internal_saving_file.bin", 
+            std::ios::out | std::ios::binary);
+
+        if (!file.is_open()){
+            CL_CORE_ASSERT("Unable to save state of program.");
+        }
+
+        for (auto& object : m_Objects){
+            file << object->GetFilepath() << "\n";
+        }
+        file.close();
     }
 
     void SceneView::OnUpdate(float ts) {
@@ -43,19 +79,55 @@ namespace cl{
                 -distance, distance, 
                 m_Camera->GetNear(), m_Camera->GetFar());
 
-        // Render objects
         m_Frame->Bind();
         m_Program->Bind();
             m_Program->SetMat4("projection", projection);
             m_Program->SetMat4("view", m_Camera->GetView());
 
+            /* Grid */
+            if (isGrid){
+                m_Program->SetMat4("model", glm::mat4(1.0f));
+                m_Program->SetFloat4("col", Grid[0].GetColor());
+                for(int i=0; i<15; i++)
+                    Grid[i].Draw();
+            }
+
+            /* Render objects */
+            m_Program->SetFloat4("directionalLight.colour", m_Light.GetColor());
+            m_Program->SetFloat("directionalLight.ambientIntensity", m_Light.GetIntensity());
+            m_Program->SetFloat3("directionalLight.direction", m_Light.GetDirection());
+            m_Program->SetFloat("directionalLight.diffuseIntensity", m_Light.GetDiffuseIntensity());
+
             for(auto& object : m_Objects){
                 m_Program->SetMat4("model", object->GetModel());
-                m_Program->SetFloat4("setColor", object->GetColor());
+                m_Program->SetFloat4("col", object->GetColor());
 
                 object->Bind();
                 Renderer::Draw(object->GetVerteces(), m_Camera->GetMode());
             }
+
+            /* Axis indicator*/
+            m_Program->SetFloat4("directionalLight.colour", glm::vec4(1.0f));
+            m_Program->SetFloat("directionalLight.ambientIntensity", 1.0f);
+
+            if (isAxis){
+                Renderer::SetViewport(25, 25, 100, 100);
+                
+                projection = glm::perspective(45.0f, (GLfloat)aspectRatio, 0.1f, 100.0f);
+                m_Program->SetMat4("projection", projection);
+                m_Program->SetMat4("view", glm::mat4(1.0f));
+                glm::mat4 model = glm::mat4(1.0f);
+                model = glm::translate(model, glm::vec3(0.0f, 0.0f, -2.1f)) * m_Camera->GetRotate();
+                m_Program->SetMat4("model", model);
+
+                m_Program->SetFloat4("col", xAxis.GetColor());
+                xAxis.Draw();
+                m_Program->SetFloat4("col", yAxis.GetColor());
+                yAxis.Draw();
+                m_Program->SetFloat4("col", zAxis.GetColor());
+                zAxis.Draw();
+            }
+
         m_Program->Unbind();
         m_Frame->Unbind();
 
@@ -70,9 +142,8 @@ namespace cl{
     // very basic implementation...
     // not all files will be able to open correctly
     // but for now it works just fine i guess
+    // TODO: quads and other instances, faces, lines, textures
     bool SceneView::LoadMesh(const std::string& filepath, bool clear){
-        std::string name = filepath.substr(filepath.find_last_of("/\\") + 1);
-
         std::ifstream stream(filepath, std::ios::in);
         if(!stream.is_open()){
             CL_CORE_ASSERT("Failed to open file:", filepath);
@@ -80,8 +151,14 @@ namespace cl{
             return false;
         }
 
-        std::vector<Vertex> verteces;
-        std::vector<unsigned int> indeces;
+        std::vector<Vertex> vertices;
+
+        std::vector<glm::vec3> vertex_positions;
+        std::vector<glm::vec3> vertex_normals;
+
+        std::map<unsigned int, unsigned int> indecies;
+        std::vector<unsigned int> vertex_indecies;
+        // std::vector<unsigned int> vertex_normal_indecies;
 
         std::string line;
         while(getline(stream, line)){
@@ -89,31 +166,39 @@ namespace cl{
             std::string id;
             ss >> id;
 
-            if (id == "v"){
+            if (id == "v"){ // vertex
                 glm::vec3 v;
                 ss >> v.x >> v.y >> v.z;
 
-                verteces.push_back(Vertex(v));
+                vertex_positions.push_back(v);
             } 
+            else if (id == "vn"){ // normal
+                glm::vec3 v;
+                ss >> v.x >> v.y >> v.z;
+
+                vertex_normals.push_back(v);
+            }
             else if (id == "f"){
-                // TODO: implement quads, normals, UVs
-                std::string v1, v2,  v3;
-                ss >> v1 >> v2 >> v3;
+                std::string v;
+                while(ss >> v){
+                    auto token = tokenize(v, '/');
 
-                uint32_t vert_idx[3];
-                vert_idx[0] = tokenize(v1, '/').at(0);
-                vert_idx[1] = tokenize(v2, '/').at(0);
-                vert_idx[2] = tokenize(v3, '/').at(0);
-
-                indeces.push_back(vert_idx[0] - 1);
-                indeces.push_back(vert_idx[1] - 1);
-                indeces.push_back(vert_idx[2] - 1);
+                    vertex_indecies.push_back(token.at(0)-1);
+                    indecies[token.at(0)-1] = token.at(2)-1;
+                    // vertex_normal_indecies.push_back(token.at(2)-1);
+                }
             }
         }
 
         if (clear)
             m_Objects.clear();
-        m_Objects.push_back(std::make_unique<cl::Object>(name, verteces, indeces));
+
+        for (int i=0; i < vertex_positions.size(); i++){
+            vertices.push_back(Vertex(vertex_positions[i], 
+                vertex_normals[indecies[i]]));
+        } 
+
+        m_Objects.push_back(std::make_unique<cl::Object>(filepath, vertices, vertex_indecies));
 
         stream.close();
         return true;
@@ -213,9 +298,12 @@ namespace cl{
         
         std::stringstream ss(line);
         std::string item;
-        while (std::getline(ss, item, token))
-        if (!item.empty())
-            result.push_back(std::stoi(item));
+        while (std::getline(ss, item, token)){
+            if (!item.empty())
+                result.push_back(std::stoi(item));
+            else
+                result.push_back(0);
+        }
 
         return result;
     }

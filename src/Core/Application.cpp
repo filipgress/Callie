@@ -29,8 +29,8 @@ namespace cl{
         // UI init
         UIRenderer::Init();
 
-        m_Panel = std::make_unique<PropertyPanel>();
         m_Scene = std::make_unique<SceneView>();
+        m_Panel = std::make_unique<PropertyPanel>();
 
         m_Panel->SetLoadCallback(CL_BIND_CALLBACK_FN(Application::OnLoadFile));
 

@@ -3,6 +3,7 @@
 #include <Core/Object.h>
 #include <Graphics/Camera.h>
 #include <Graphics/Shader.h>
+#include <Graphics/Light.h>
 #include <Graphics/FrameBuffer.h>
 
 #include <Window/ApplicationEvent.h>
@@ -14,6 +15,7 @@ namespace cl{
         friend class PropertyPanel;
         friend bool LoadMesh(const std::string& filepath);
         private:
+            Light m_Light;
             Scope<Shader> m_Program;
             Scope<Camera> m_Camera;
             Scope<FrameBuffer> m_Frame;
@@ -29,8 +31,15 @@ namespace cl{
             const std::string& c_VertexShader   = "../res/shaders/VertexShader.shader";
             const std::string& c_FragmentShader = "../res/shaders/FragmentShader.shader";
 
+            /* Axis indicator*/
+            cl::Line xAxis, yAxis, zAxis;
+            cl::Line Grid[15];
+
+            bool isGrid = true, isAxis = true;
+
         public:
             SceneView();
+            ~SceneView();
 
             bool LoadMesh(const std::string& filepath, bool clear = false);
             void OnUpdate(float ts);

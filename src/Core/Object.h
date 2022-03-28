@@ -8,9 +8,23 @@
 namespace cl{
     struct Vertex{
         glm::vec3 m_Position;
+        glm::vec3 m_Normal;
 
         public:
-            Vertex(glm::vec3 position): m_Position(position) {}
+            Vertex(glm::vec3 position, glm::vec3 normal): m_Position(position), m_Normal(normal) {}
+    };
+
+    class Line{
+        private:
+            VertexArray m_VAO;
+            VertexBuffer m_VBO;
+            glm::vec4 m_Color;
+
+        public:
+            Line(glm::vec3 a, glm::vec3 b, glm::vec4 color);
+
+            void Draw() const;
+            glm::vec4 GetColor() const { return m_Color; }
     };
 
     class Mesh{
@@ -31,7 +45,7 @@ namespace cl{
 
     class Object{
         private:
-            const std::string m_Name;
+            const std::string m_Filepath;
 
             Mesh m_Mesh;
             glm::vec3 m_Pos;
@@ -45,7 +59,8 @@ namespace cl{
             Object(const std::string name, std::vector<Vertex> verteces,
                 std::vector<unsigned int> indeces, bool visible = true);
 
-            inline const std::string& GetName() const { return m_Name; }
+            const std::string GetName() const;
+            inline const std::string& GetFilepath() const { return m_Filepath; }
             inline glm::vec4& GetColor() { return m_Color; }
             inline glm::vec3& GetPos() { return m_Pos; }
             inline glm::vec3& GetRot() { return m_Rot; }

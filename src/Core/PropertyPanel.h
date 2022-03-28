@@ -13,11 +13,9 @@ namespace cl{
             CallbackFn m_MeshLoadCallback;
 
             bool m_Mode, m_Control;
-            std::stringstream m_OpenedFiles;
 
         public:
             PropertyPanel();
-            ~PropertyPanel();
 
             void OnUpdate();
             void OnEvent(Event& e);

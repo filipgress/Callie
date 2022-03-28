@@ -8,7 +8,6 @@
  *      - Quads loading
  *      - Directional light
  *      - Recently opened
- *      - Close
  *      - Grid
  *      - Axis Indicator
  */
@@ -17,18 +16,6 @@ namespace cl{
     PropertyPanel::PropertyPanel()
         : m_Control(false) {
         m_FileDialog.SetFileFilters({ ".obj" });
-    }
-
-    PropertyPanel::~PropertyPanel(){
-        std::ofstream file("internal_saving_file.bin", 
-            std::ios::out | std::ios::binary);
-
-        if (!file.is_open()){
-            CL_CORE_ASSERT("Unable to save state of program.");
-        }
-
-        file << m_OpenedFiles.str();
-        file.close();
     }
 
     void PropertyPanel::SetLoadCallback(CallbackFn callback) { 
@@ -52,22 +39,19 @@ namespace cl{
                     m_Mode = false;
                     m_FileDialog.Open();
                 }
-                if (ImGui::BeginMenu("Open Recent")){
-                    ImGui::MenuItem("fish_hat.c");
-                    ImGui::MenuItem("fish_hat.inl");
-                    ImGui::MenuItem("fish_hat.h");
-                    ImGui::EndMenu();
-                }
 
                 ImGui::Separator();
                 if (ImGui::MenuItem("Close all", "Ctrl+x")) {
                     scene.m_Objects.clear();
-                    m_OpenedFiles.str("../examples/cube.obj");
                 }
                 if (ImGui::BeginMenu("Close")){
-                    ImGui::MenuItem("fish_hat.c");
-                    ImGui::MenuItem("fish_hat.inl");
-                    ImGui::MenuItem("fish_hat.h");
+                    for (auto& object : scene.m_Objects){
+                        if (ImGui::MenuItem(object->GetName().c_str())){ 
+                            scene.m_Objects.erase(std::remove(scene.m_Objects.begin(),
+                                scene.m_Objects.end(), object));
+                            break;
+                        }
+                    }
                     ImGui::EndMenu();
                 }
                 if (ImGui::MenuItem("Quit", "Alt+F4")) {
@@ -85,8 +69,12 @@ namespace cl{
                     scene.m_Camera->ToggleProjection();
                 }
                 ImGui::Separator();
-                if (ImGui::MenuItem("Grid", NULL, true)) {}
-                if (ImGui::MenuItem("Axis indicator", NULL, true)) {}
+                if (ImGui::MenuItem("Grid", NULL, scene.isGrid)) {
+                    scene.isGrid = !scene.isGrid;
+                }
+                if (ImGui::MenuItem("Axis indicator", NULL, scene.isAxis)) {
+                    scene.isAxis = !scene.isAxis;
+                }
                 ImGui::EndMenu();
             }
             ImGui::EndMainMenuBar();
@@ -123,7 +111,12 @@ namespace cl{
                 }
             }
         }
-        if (ImGui::CollapsingHeader("Light")) {}
+        int temperature = 0;
+        if (ImGui::CollapsingHeader("Light")) {
+            ImGui::SliderFloat("Ambient", &scene.m_Light.GetIntensity(), 0.0f, 1.0f);
+            ImGui::SliderFloat("Diffuse", &scene.m_Light.GetDiffuseIntensity(), 0.0f, 1.0f);
+            ImGui::SliderFloat3("Direction", &scene.m_Light.GetDirection()[0], -1.0f, 1.0f);
+        }
         ImGui::End();
 
         m_FileDialog.Display();
@@ -131,10 +124,6 @@ namespace cl{
             auto file_path = m_FileDialog.GetSelected().string();
             
             if (m_MeshLoadCallback(file_path)){
-                if(m_Mode){
-                    m_OpenedFiles.str("");
-                }
-                m_OpenedFiles << file_path << "\n";
             }
 
             m_FileDialog.ClearSelected();
@@ -180,14 +169,8 @@ namespace cl{
                     break;
                 case Key::X:
                     scene.m_Objects.clear();
-                    m_OpenedFiles.str("../examples/cube.obj");
                     break; 
             }
-        }
-        if (key == Key::O && m_Control){
-            if (!m_FileDialog.IsOpened())
-                m_FileDialog.Open();
-            return true;
         }
         
         return false;
@@ -210,7 +193,6 @@ namespace cl{
         std::string line;
         while(getline(stream, line)){
             if (m_MeshLoadCallback(line)){
-                m_OpenedFiles << line << "\n";
             }
         }
 

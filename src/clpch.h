@@ -3,6 +3,7 @@
 #include <fstream>
 #include <sstream>
 #include <string>
+#include <map>
 
 #include <mutex>
 #include <memory>

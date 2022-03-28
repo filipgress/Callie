@@ -10,6 +10,7 @@ namespace cl{
 
         public:
             VertexBuffer(const void* data, unsigned int size);
+            VertexBuffer(glm::vec3 point1, glm::vec3 point2);
             ~VertexBuffer();
 
             void Bind() const;
