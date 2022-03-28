@@ -184,7 +184,11 @@ namespace cl{
     }
 
     void PropertyPanel::LoadObjects(){
-        std::ifstream stream("internal_saving_file.bin", std::ios::in | std::ios::binary);
+        // std::ifstream stream("internal_saving_file.bin");
+        std::fstream stream;
+        stream.open("internal_saving_file.bin", std::ios::out | std::ios::app);
+        stream.close();
+        stream.open("internal_saving_file.bin", std::ios::in | std::ios::out | std::ios::app);
 
         if(!stream.is_open()){
             CL_CORE_ASSERT("Unable to load previous session! Internal file: 'internal_saving_file.bin' is not accessible!");
