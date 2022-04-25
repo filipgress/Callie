@@ -96,6 +96,7 @@ namespace cl{
     }
 
     const std::string Shader::ParseShader(const std::string& filepath){
+        INFO(filepath);
         std::ifstream stream(filepath, std::ios::in);
         std::string shaderSource = "";
 
