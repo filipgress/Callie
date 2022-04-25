@@ -27,21 +27,30 @@ add_executable(${PROJECT_NAME}
     src/Graphics/VertexBuffer.cpp
 )
 
+target_include_directories(${PROJECT_NAME} 
+    PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src
+    PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src/ImGui
+    PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/glfw/include
+    PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/glew/include
+    PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/glm
+)
+
+add_subdirectory(src/ImGui)
+add_subdirectory(glfw)
+add_subdirectory(glew)
+add_subdirectory(glm)
+
+
 configure_file(
     src/Core/configure_file.h
     ${CMAKE_CURRENT_SOURCE_DIR}/src/Core/Config.h 
 )
 
-set(OpenGL_GL_PREFERENCE GLVND)
-find_package(OpenGL REQUIRED)
-find_package(GLEW   REQUIRED)
-find_package(glfw3  REQUIRED)
-find_package(glm    REQUIRED)
+#set(OpenGL_GL_PREFERENCE GLVND)
+#find_package(OpenGL REQUIRED)
+#find_package(GLEW   REQUIRED)
+#find_package(glfw3  REQUIRED)
+#find_package(glm    REQUIRED)
 
-add_subdirectory(src/ImGui)
-target_link_libraries(${PROJECT_NAME} PRIVATE GL GLEW glfw imgui ${CMAKE_DL_LIBS})
+target_link_libraries(${PROJECT_NAME} PRIVATE libglew_static glfw imgui ${CMAKE_DL_LIBS})
 target_precompile_headers(${PROJECT_NAME} PRIVATE src/clpch.h)
-target_include_directories(${PROJECT_NAME} 
-    PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src
-    PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src/ImGui
-)

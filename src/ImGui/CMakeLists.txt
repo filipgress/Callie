@@ -18,4 +18,10 @@ set(imgui_src
     imgui.cpp
 )
 
+include_directories(
+    ${PROJECT_SOURCE_DIR}/glfw/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/glew/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/glm
+)
+
 add_library(imgui ${imgui_src})
