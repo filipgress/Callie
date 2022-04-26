@@ -2,6 +2,10 @@ cmake_minimum_required(VERSION 3.5)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+if (UNIX)
+    set(CMAKE_C_COMPILER "/usr/bin/gcc")
+endif (UNIX)
+
 project(Callie
     VERSION 1.0.0
     LANGUAGES CXX
@@ -27,6 +31,13 @@ add_executable(${PROJECT_NAME}
     src/Graphics/VertexBuffer.cpp
 )
 
+add_subdirectory(src/ImGui)
+add_subdirectory(glfw)
+add_subdirectory(glew)
+add_subdirectory(glm)
+
+target_precompile_headers(${PROJECT_NAME} PRIVATE src/clpch.h)
+target_link_libraries(${PROJECT_NAME} PRIVATE libglew_static glfw imgui ${CMAKE_DL_LIBS})
 target_include_directories(${PROJECT_NAME} 
     PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src
     PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src/ImGui
@@ -35,22 +46,14 @@ target_include_directories(${PROJECT_NAME}
     PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/glm
 )
 
-add_subdirectory(src/ImGui)
-add_subdirectory(glfw)
-add_subdirectory(glew)
-add_subdirectory(glm)
-
-
 configure_file(
     src/Core/configure_file.h
     ${CMAKE_CURRENT_SOURCE_DIR}/src/Core/Config.h 
 )
 
+# rather complicated on Windows :D
 #set(OpenGL_GL_PREFERENCE GLVND)
 #find_package(OpenGL REQUIRED)
 #find_package(GLEW   REQUIRED)
 #find_package(glfw3  REQUIRED)
 #find_package(glm    REQUIRED)
-
-target_link_libraries(${PROJECT_NAME} PRIVATE libglew_static glfw imgui ${CMAKE_DL_LIBS})
-target_precompile_headers(${PROJECT_NAME} PRIVATE src/clpch.h)
