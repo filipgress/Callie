@@ -28,8 +28,8 @@ namespace cl{
 
             glm::vec2 m_Moved, m_Pressed;
 
-            const std::string& c_VertexShader   = "../../../res/shaders/VertexShader.shader";
-            const std::string& c_FragmentShader = "../../../res/shaders/FragmentShader.shader";
+            const std::string& c_VertexShader   = "../res/shaders/VertexShader.shader";
+            const std::string& c_FragmentShader = "../res/shaders/FragmentShader.shader";
 
             /* Axis indicator*/
             cl::Line xAxis, yAxis, zAxis;
