@@ -81,35 +81,37 @@ namespace cl{
         }
 
         ImGui::Begin("Properties");
+        u_int16_t i=0;
         for (auto& object : scene.m_Objects){
             const std::string& name = object->GetName();
-            if (ImGui::CollapsingHeader(name.c_str())) {
-                ImGui::ColorPicker3(("Color##"+name).c_str(), &object->GetColor()[0], ImGuiColorEditFlags_PickerHueWheel | ImGuiColorEditFlags_DisplayRGB);
+            if (ImGui::CollapsingHeader((name+"##"+std::to_string(i)).c_str())) {
+                ImGui::ColorPicker3(("Color##"+name+std::to_string(i)).c_str(), &object->GetColor()[0], ImGuiColorEditFlags_PickerHueWheel | ImGuiColorEditFlags_DisplayRGB);
 
                 // Translate
-                if (ImGui::TreeNode(("Position##"+name).c_str())){
-                    ImGui::DragFloat(("X##pos"+name).c_str(), &object->GetPos()[0], 0.03f);
-                    ImGui::DragFloat(("Y##pos"+name).c_str(), &object->GetPos()[1], 0.03f);
-                    ImGui::DragFloat(("Z##pos"+name).c_str(), &object->GetPos()[2], 0.03f);
+                if (ImGui::TreeNode(("Position##"+name+std::to_string(i)).c_str())){
+                    ImGui::DragFloat(("X##pos"+name+std::to_string(i)).c_str(), &object->GetPos()[0], 0.03f);
+                    ImGui::DragFloat(("Y##pos"+name+std::to_string(i)).c_str(), &object->GetPos()[1], 0.03f);
+                    ImGui::DragFloat(("Z##pos"+name+std::to_string(i)).c_str(), &object->GetPos()[2], 0.03f);
                     ImGui::TreePop();
                 }
 
                 // // Rotate 
-                if (ImGui::TreeNode(("Rotate##"+name).c_str())){
-                    ImGui::DragFloat(("X##rot"+name).c_str(), &object->GetRot()[0], 0.1f);
-                    ImGui::DragFloat(("Y##rot"+name).c_str(), &object->GetRot()[1], 0.1f);
-                    ImGui::DragFloat(("Z##rot"+name).c_str(), &object->GetRot()[2], 0.1f);
+                if (ImGui::TreeNode(("Rotate##"+name+std::to_string(i)).c_str())){
+                    ImGui::DragFloat(("X##rot"+name+std::to_string(i)).c_str(), &object->GetRot()[0], 0.1f);
+                    ImGui::DragFloat(("Y##rot"+name+std::to_string(i)).c_str(), &object->GetRot()[1], 0.1f);
+                    ImGui::DragFloat(("Z##rot"+name+std::to_string(i)).c_str(), &object->GetRot()[2], 0.1f);
                     ImGui::TreePop();
                 }
 
                 // // Scale 
-                if (ImGui::TreeNode(("Scale##"+name).c_str())){
-                    ImGui::DragFloat(("X##scale"+name).c_str(), &object->GetScale()[0], 0.03f);
-                    ImGui::DragFloat(("Y##scale"+name).c_str(), &object->GetScale()[1], 0.03f);
-                    ImGui::DragFloat(("Z##scale"+name).c_str(), &object->GetScale()[2], 0.03f);
+                if (ImGui::TreeNode(("Scale##"+name+std::to_string(i)).c_str())){
+                    ImGui::DragFloat(("X##scale"+name+std::to_string(i)).c_str(), &object->GetScale()[0], 0.03f);
+                    ImGui::DragFloat(("Y##scale"+name+std::to_string(i)).c_str(), &object->GetScale()[1], 0.03f);
+                    ImGui::DragFloat(("Z##scale"+name+std::to_string(i)).c_str(), &object->GetScale()[2], 0.03f);
                     ImGui::TreePop();
                 }
             }
+            i++;
         }
         int temperature = 0;
         if (ImGui::CollapsingHeader("Light")) {
