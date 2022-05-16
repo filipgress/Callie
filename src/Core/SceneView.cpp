@@ -32,7 +32,7 @@ namespace cl{
             cl::Line({  0.0f, -5.0f, 0.0f }, { 0.0f,  5.0f, 0.0f }, {0.5f, 0.5f, 0.5f, 1.0f})
           } {
         m_Frame = std::make_unique<FrameBuffer>();
-        m_Frame->CreateBuffers(1600, 1600);
+        m_Frame->CreateBuffers(1200, 1200);
 
         m_Program = std::make_unique<Shader>(c_VertexShader, c_FragmentShader);
         m_Camera = std::make_unique<cl::Camera>();

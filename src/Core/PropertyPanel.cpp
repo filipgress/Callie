@@ -88,7 +88,7 @@ namespace cl{
                 ImGui::ColorPicker3(("Color##"+name+std::to_string(i)).c_str(), &object->GetColor()[0], ImGuiColorEditFlags_PickerHueWheel | ImGuiColorEditFlags_DisplayRGB);
 
                 // Translate
-                if (ImGui::TreeNode(("Position##"+name+std::to_string(i)).c_str())){
+                if (ImGui::TreeNodeEx(("Position##"+name+std::to_string(i)).c_str(), ImGuiTreeNodeFlags_FramePadding)){
                     ImGui::DragFloat(("X##pos"+name+std::to_string(i)).c_str(), &object->GetPos()[0], 0.03f);
                     ImGui::DragFloat(("Y##pos"+name+std::to_string(i)).c_str(), &object->GetPos()[1], 0.03f);
                     ImGui::DragFloat(("Z##pos"+name+std::to_string(i)).c_str(), &object->GetPos()[2], 0.03f);
@@ -96,7 +96,7 @@ namespace cl{
                 }
 
                 // // Rotate 
-                if (ImGui::TreeNode(("Rotate##"+name+std::to_string(i)).c_str())){
+                if (ImGui::TreeNodeEx(("Rotate##"+name+std::to_string(i)).c_str(), ImGuiTreeNodeFlags_FramePadding)){
                     ImGui::DragFloat(("X##rot"+name+std::to_string(i)).c_str(), &object->GetRot()[0], 0.1f);
                     ImGui::DragFloat(("Y##rot"+name+std::to_string(i)).c_str(), &object->GetRot()[1], 0.1f);
                     ImGui::DragFloat(("Z##rot"+name+std::to_string(i)).c_str(), &object->GetRot()[2], 0.1f);
@@ -104,7 +104,7 @@ namespace cl{
                 }
 
                 // // Scale 
-                if (ImGui::TreeNode(("Scale##"+name+std::to_string(i)).c_str())){
+                if (ImGui::TreeNodeEx(("Scale##"+name+std::to_string(i)).c_str(), ImGuiTreeNodeFlags_FramePadding)){
                     ImGui::DragFloat(("X##scale"+name+std::to_string(i)).c_str(), &object->GetScale()[0], 0.03f);
                     ImGui::DragFloat(("Y##scale"+name+std::to_string(i)).c_str(), &object->GetScale()[1], 0.03f);
                     ImGui::DragFloat(("Z##scale"+name+std::to_string(i)).c_str(), &object->GetScale()[2], 0.03f);
