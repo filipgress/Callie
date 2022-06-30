@@ -42,7 +42,10 @@ namespace cl{
     }
 
     void Camera::Zoom(float delta){
-        float distance = std::clamp(GetDistance()*10, 0.0f, 3.5f);
+        float distance = GetDistance()*10;
+
+        if (distance < 0.0f) distance = 0.0f;
+        else if (distance > 3.5f) distance = 3.5f;
         m_Position = m_Direction + (m_Position - m_Direction) * (1 + delta * distance);
     }
 

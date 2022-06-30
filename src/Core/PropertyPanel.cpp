@@ -81,7 +81,7 @@ namespace cl{
         }
 
         ImGui::Begin("Properties");
-        u_int16_t i=0;
+        uint16_t i=0;
         for (auto& object : scene.m_Objects){
             const std::string& name = object->GetName();
             if (ImGui::CollapsingHeader((name+"##"+std::to_string(i)).c_str())) {
